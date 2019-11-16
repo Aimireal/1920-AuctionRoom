@@ -1,7 +1,8 @@
 /*
-    SpaceUtils - Used for connection to the JavaSpace
+    Auction.SpaceUtils - Used for connection to the JavaSpace
  */
 
+package Auction;
 import net.jini.space.JavaSpace;
 import net.jini.core.discovery.LookupLocator;
 import net.jini.core.lookup.ServiceRegistrar;
