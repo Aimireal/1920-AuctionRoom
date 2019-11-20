@@ -88,7 +88,7 @@ public class ShowLotsGUI extends javax.swing.JFrame implements RemoteEventListen
             try
             {
                 stub = (RemoteEventListener) exporter.export(this);
-                AccountItem lotsTemplate = new AccountItem();
+                AuctionItem lotsTemplate = new AuctionItem();
                 js.notify((Entry) lotsTemplate, null, this.stub, Lease.FOREVER, null);
             } catch(Exception e)
             {
