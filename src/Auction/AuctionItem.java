@@ -8,7 +8,7 @@ import net.jini.core.entry.*;
 public class AuctionItem implements Entry
 {
     //Variables
-    public Integer lotNum; //Used for counter location
+    public Integer lotNum; //Used for counter location when we read in the ShowLotsGUI
     public String lotTitle;
     public String lotDesc;
     public double lotPrice; //Set by lot author, then updated to reflect current bid
@@ -20,9 +20,7 @@ public class AuctionItem implements Entry
     public Long lotCreationTime;
     public Long lotDuration; //Specified duration of Lot
     public Long lotEndTime;
-
     public Boolean lotExpired; //Boolean for active auction
-    public Boolean lotHiddenBid; //Hiding bids from other users
 
     public AuctionItem()
     {
@@ -43,7 +41,6 @@ public class AuctionItem implements Entry
         lotCreationTime = System.currentTimeMillis();
         lotEndTime = lotCreationTime + timeToMills(lotDuration);
         lotExpired = false;
-        lotHiddenBid = false;
     }
 
     public void addBid()

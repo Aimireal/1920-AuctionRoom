@@ -14,7 +14,7 @@ public class AuctionLotStartQueue
         JavaSpace js = SpaceUtils.getSpace("localhost");
         if(js == null)
         {
-            System.err.println("Unable to connect to localhost");
+            System.err.println("Failed to find JavaSpace");
             System.exit(1);
         }
 
