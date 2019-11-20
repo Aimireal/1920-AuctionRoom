@@ -50,6 +50,7 @@ public class AuctionItem implements Entry
 
     public void newPrice(double newBid)
     {
+        //Method for updating lot price when bids are placed
         lotPrice = newBid;
     }
 

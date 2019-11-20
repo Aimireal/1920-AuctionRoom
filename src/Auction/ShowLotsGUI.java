@@ -36,10 +36,12 @@ public class ShowLotsGUI extends javax.swing.JFrame implements RemoteEventListen
 
     private static int TWENTYFIVE_MILLS = 250;
     private static int TWO_SECONDS = 2000;
+    private static int FIVE_SECONDS = 5000;
 
 
     public ShowLotsGUI()
     {
+        super();
         setupGUI();
     }
 
@@ -101,13 +103,13 @@ public class ShowLotsGUI extends javax.swing.JFrame implements RemoteEventListen
             {
                 scrpanLots = new JScrollPane();
                 getContentPane().add(scrpanLots);
-                //scrpanLots.setBounds();
+                scrpanLots.setBounds(12, 12, 900, 500);
                 {
                     ListModel lotModel = new DefaultComboBoxModel(new String[]{"No Lots Found"});
                     listLots = new JList();
                     scrpanLots.setViewportView(listLots);
                     listLots.setModel(lotModel);
-                    //listLots.setBounds();
+                    listLots.setBounds(89, -31, 900, 500);
                 }
             }
 
@@ -123,7 +125,7 @@ public class ShowLotsGUI extends javax.swing.JFrame implements RemoteEventListen
         Transaction.Created trc = null;
         try
         {
-            trc = TransactionFactory.create(tranMan, TWO_SECONDS);
+            trc = TransactionFactory.create(tranMan, FIVE_SECONDS);
         } catch(Exception e)
         {
             System.err.println("Could not create Transaction " + e);
@@ -148,17 +150,17 @@ public class ShowLotsGUI extends javax.swing.JFrame implements RemoteEventListen
                     if(currentLot.lotExpired == true)
                     {
                         System.err.println(currentLot.lotTitle + " has expired.");
-                        //lotModel.addElement("[Expired]");
+                        lotModel.addElement("[Expired] Items");
                     } else
                     {
                         System.out.println(currentLot.lotTitle + " added to JList");
                         String addLotList =
                                 "Lot Title: " + currentLot.lotTitle +
                                         "Lot Description: " + currentLot.lotDesc +
-                                        "Lot Seller: " + currentLot.lotSellerID +
-                                        "Current Bid: " + currentLot.lotPrice +
-                                        "Highest Bidder: " + currentLot.lotHighestBidder +
-                                        "Buy it Now Price: " + currentLot.lotBuyNowPrice;
+                                        " | Lot Seller: " + currentLot.lotSellerID +
+                                        " | Current Bid: £" + currentLot.lotPrice +
+                                        " | Highest Bidder: " + currentLot.lotHighestBidder +
+                                        " | Buy it Now Price: £" + currentLot.lotBuyNowPrice;
                         lotModel.addElement(addLotList);
                     }
                 }
