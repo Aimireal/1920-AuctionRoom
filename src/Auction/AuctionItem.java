@@ -1,16 +1,18 @@
 /*
-    AuctionItem - Class for creating the lots and setting the values
+    Auction.AuctionItem - Class for creating the lots and setting the values
  */
 
+package Auction;
 import net.jini.core.entry.*;
 
 public class AuctionItem implements Entry
 {
     //Variables
-    public Integer lotNum; //Used for counter location
+    public Integer lotNum; //Used for counter location when we read in the ShowLotsGUI
     public String lotTitle;
     public String lotDesc;
     public double lotPrice; //Set by lot author, then updated to reflect current bid
+    public double lotBuyNowPrice; //Set by author, price for instantly buying lot
     public String lotSellerID; //Identification for Seller of Lot
 
     public Integer lotBids; //Number of bids placed
@@ -18,21 +20,20 @@ public class AuctionItem implements Entry
     public Long lotCreationTime;
     public Long lotDuration; //Specified duration of Lot
     public Long lotEndTime;
-
     public Boolean lotExpired; //Boolean for active auction
-    public Boolean lotHiddenBid; //Hiding bids from other users
 
     public AuctionItem()
     {
         //No args template
     }
 
-    public void AuctionItem(int counter, String title, String description, Double price, String seller, Long duration)
+    public void AuctionItem(int counter, String title, String description, Double price, Double buyNowPrice, String seller, Long duration)
     {
         lotNum = counter;
         lotTitle = title;
         lotDesc = description;
         lotPrice = price;
+        lotBuyNowPrice = buyNowPrice;
         lotSellerID = seller;
         lotDuration = duration;
 
@@ -40,7 +41,6 @@ public class AuctionItem implements Entry
         lotCreationTime = System.currentTimeMillis();
         lotEndTime = lotCreationTime + timeToMills(lotDuration);
         lotExpired = false;
-        lotHiddenBid = false;
     }
 
     public void addBid()
@@ -50,6 +50,7 @@ public class AuctionItem implements Entry
 
     public void newPrice(double newBid)
     {
+        //Method for updating lot price when bids are placed
         lotPrice = newBid;
     }
 
