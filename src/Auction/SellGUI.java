@@ -47,9 +47,6 @@ public class SellGUI extends JFrame implements RemoteEventListener
     {
         super();
 
-        //Basic setup
-        setTitle("AuctionRoom: Sell Lots");
-
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.getContentPane().setLayout(null);
         this.setContentPane(panelSellLots);
@@ -93,7 +90,7 @@ public class SellGUI extends JFrame implements RemoteEventListener
                         //Get details of the lot entered and verify required info
                         String title = txtFldTitle.getText();
                         String description = txtFldDesc.getText();
-                        String price = txtFldDesc.getText();
+                        String price = txtFldStartBid.getText();
                         String buyNowPrice = txtFldBuyNow.getText();
                         String seller = "PLACEHOLDER"; //ToDo: Method to extract current logged in user name here
                         String durString = txtFldDuration.getText();
@@ -178,7 +175,7 @@ public class SellGUI extends JFrame implements RemoteEventListener
                 @Override
                 public void actionPerformed(ActionEvent actionEvent)
                 {
-                    //ToDo: Code to move back to main form. Eventually will remove code to manually launch this I guess
+                    //ToDo: Code to move back to main form. Need to make all nav buttons work
                 }
             });
         } catch(Exception e)

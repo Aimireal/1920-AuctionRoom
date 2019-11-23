@@ -31,7 +31,7 @@
           </grid>
         </constraints>
         <properties>
-          <text value="Enter your Bid:"/>
+          <text value=""/>
         </properties>
       </component>
       <component id="b4d49" class="javax.swing.JLabel">
@@ -73,7 +73,7 @@
           </grid>
         </constraints>
         <properties>
-          <text value="Buy it Now Price:"/>
+          <text value=""/>
         </properties>
       </component>
       <component id="e4d19" class="javax.swing.JButton" binding="btnCancel">

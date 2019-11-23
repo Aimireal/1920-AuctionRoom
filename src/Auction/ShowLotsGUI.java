@@ -57,7 +57,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
         super();
 
         //Basic setup
-        setTitle("AuctionRoom: Browse Lots");
+        setTitle("AuctionRoom");
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setContentPane(panelShowLots);
