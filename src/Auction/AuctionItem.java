@@ -11,12 +11,14 @@ public class AuctionItem implements Entry
     public Integer lotNum; //Used for counter location when we read in the ShowLotsGUI
     public String lotTitle;
     public String lotDesc;
-    public double lotPrice; //Set by lot author, then updated to reflect current bid
-    public double lotBuyNowPrice; //Set by author, price for instantly buying lot
+
+    public String lotPrice; //Set by lot author, then updated to reflect current bid
+    public String lotBuyNowPrice; //Set by author, price for instantly buying lot
     public String lotSellerID; //Identification for Seller of Lot
 
     public Integer lotBids; //Number of bids placed
     public String lotHighestBidder; //Current winning user, initialised as nothing
+
     public Long lotCreationTime;
     public Long lotDuration; //Specified duration of Lot
     public Long lotEndTime;
@@ -27,11 +29,12 @@ public class AuctionItem implements Entry
         //No args template
     }
 
-    public void AuctionItem(int counter, String title, String description, Double price, Double buyNowPrice, String seller, Long duration)
+    public void AuctionItem(int counter, String title, String description, String price, String buyNowPrice, String seller, Long duration)
     {
         lotNum = counter;
         lotTitle = title;
         lotDesc = description;
+
         lotPrice = price;
         lotBuyNowPrice = buyNowPrice;
         lotSellerID = seller;
@@ -45,10 +48,11 @@ public class AuctionItem implements Entry
 
     public void addBid()
     {
+        //Increment bid counter for GUI
         lotBids++;
     }
 
-    public void newPrice(double newBid)
+    public void newPrice(String newBid)
     {
         //Method for updating lot price when bids are placed
         lotPrice = newBid;
