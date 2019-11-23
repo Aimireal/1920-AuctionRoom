@@ -13,6 +13,7 @@ import net.jini.jeri.BasicILFactory;
 import net.jini.jeri.BasicJeriExporter;
 import net.jini.jeri.tcp.TcpServerEndpoint;
 import net.jini.space.JavaSpace;
+import org.apache.river.api.security.DelegateSecurityManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -126,19 +127,21 @@ public class PurchaseGUI extends JFrame implements RemoteEventListener
                     System.err.println("Failed to create Transaction");
                 }
 
+                //Check if value has been given for bid
+                if(txtFldBid.getText()== null || txtFldBid.getText().isEmpty())
+                {
+                    System.err.println("You must enter a bid");
+                    System.exit(1);
+                }
+
+                //Place a bid
                 Transaction txn = trc.transaction;
                 try
                 {
-                    if(txtFldBid.getText()== null || txtFldBid.getText().isEmpty());
-                    {
-                        System.err.println("You must write a value to bid");
-                    }
-
-                    //Attempt to place bid
+                    auctionLot = (AuctionItem)js.readIfExists(auctionLot, txn, FIVE_HUNDRED_MILLS);
                     double userBid = Double.parseDouble(txtFldBid.getText());
                     double lotPrice = Double.parseDouble(auctionLot.lotPrice);
 
-                    auctionLot = (AuctionItem)js.readIfExists(auctionLot, txn, FIVE_HUNDRED_MILLS);
                     if(lotPrice < userBid)
                     {
                         try
@@ -150,14 +153,19 @@ public class PurchaseGUI extends JFrame implements RemoteEventListener
 
                             js.write(auctionLot, txn, Lease.FOREVER);
                             JOptionPane.showMessageDialog(null, "You are the highest bidder");
-                        }catch (Exception e)
+                            txn.commit();
+                        }catch (NumberFormatException e)
                         {
-                            e.printStackTrace();
+                            JOptionPane.showMessageDialog(null, "Something went wrong, details are right and try again");
                         }
+                    } else
+                    {
+                        JOptionPane.showMessageDialog(null, "Bid too low, please increase bid value");
+                        txn.abort();
                     }
                 }catch (Exception e)
                 {
-                    e.printStackTrace();
+                   e.printStackTrace();
                 }
             }
         });
