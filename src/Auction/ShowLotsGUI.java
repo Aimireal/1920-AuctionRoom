@@ -23,12 +23,12 @@ import java.rmi.RemoteException;
 
 public class ShowLotsGUI extends JFrame implements RemoteEventListener
 {
-    private JButton btnView;
-    private JButton btnSellLot;
-    private JButton btnLogin;
     private JPanel panelShowLots;
     private JScrollPane scrpanLots;
     private JList listLots;
+    private JButton btnView;
+    private JButton btnSellLot;
+    private JButton btnLogin;
 
     public AuctionItem lotsTemplate = new AuctionItem();
     public AuctionLotQueue queueTemplate = new AuctionLotQueue();
@@ -55,6 +55,35 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
     public ShowLotsGUI(String title)
     {
         super();
+
+        //Basic setup
+        setTitle("AuctionRoom: Browse Lots");
+
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setContentPane(panelShowLots);
+        this.pack();
+
+        //Find TransactionManager
+        tranMan = SpaceUtils.getManager("localhost");
+        if (tranMan == null)
+        {
+            System.err.println("TransactionManager not found on LocalHost");
+        } else
+        {
+            System.out.println("TransactionManager found");
+        }
+
+        //Find JavaSpace
+        js = SpaceUtils.getSpace("localhost");
+        if (js == null)
+        {
+            System.err.println("JavaSpace not found on LocalHost");
+        } else
+        {
+            System.out.println("JavaSpace found");
+        }
+
+        //Methods for specific stuff on GUI components
         setupGUI();
     }
 
@@ -63,33 +92,6 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
     {
         try
         {
-            //Setup GUI Components
-            setTitle("AuctionRoom: Browse Lots");
-
-            this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            this.setContentPane(panelShowLots);
-            this.pack();
-
-            //Find TransactionManager
-            tranMan = SpaceUtils.getManager("localhost");
-            if (tranMan == null)
-            {
-                System.err.println("TransactionManager not found on LocalHost");
-            } else
-            {
-                System.out.println("TransactionManager found");
-            }
-
-            //Find JavaSpace
-            js = SpaceUtils.getSpace("localhost");
-            if (js == null)
-            {
-                System.err.println("JavaSpace not found on LocalHost");
-            } else
-            {
-                System.out.println("JavaSpace found");
-            }
-
             //Create Stub
             Exporter exporter = new BasicJeriExporter(TcpServerEndpoint.getInstance(0), new BasicILFactory(), false, true);
             try

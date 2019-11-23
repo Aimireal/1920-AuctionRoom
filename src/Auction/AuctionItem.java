@@ -23,12 +23,14 @@ public class AuctionItem implements Entry
     public Long lotEndTime;
     public Boolean lotExpired; //Boolean for active auction
 
+
     public AuctionItem()
     {
         //No args template
     }
 
-    public void AuctionItem(int counter, String title, String description, String price, String buyNowPrice, String seller, Long duration)
+
+    public AuctionItem(int counter, String title, String description, String price, String buyNowPrice, String seller, long duration)
     {
         lotNum = counter;
         lotTitle = title;
@@ -50,11 +52,13 @@ public class AuctionItem implements Entry
         lotBids++;
     }
 
+
     public void newPrice(String newBid)
     {
         //Method for updating lot price when bids are placed
         lotPrice = newBid;
     }
+
 
     public long timeToMills(long t)
     {
