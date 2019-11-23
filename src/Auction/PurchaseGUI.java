@@ -5,6 +5,8 @@ import net.jini.core.event.RemoteEvent;
 import net.jini.core.event.RemoteEventListener;
 import net.jini.core.event.UnknownEventException;
 import net.jini.core.lease.Lease;
+import net.jini.core.transaction.Transaction;
+import net.jini.core.transaction.TransactionFactory;
 import net.jini.core.transaction.server.TransactionManager;
 import net.jini.export.Exporter;
 import net.jini.jeri.BasicILFactory;
@@ -30,6 +32,12 @@ public class PurchaseGUI extends JFrame implements RemoteEventListener
     private JavaSpace js;
     private TransactionManager tranMan;
     private RemoteEventListener stub;
+
+    private AuctionItem auctionLot;
+
+    private static int FIVE_HUNDRED_MILLS = 500;
+    private static int TWO_SECONDS = 2000;
+    private static int FIVE_SECONDS = 5000;
 
 
     public static void main(String[] args)
@@ -108,7 +116,49 @@ public class PurchaseGUI extends JFrame implements RemoteEventListener
             @Override
             public void actionPerformed(ActionEvent actionEvent)
             {
+                //Create transaction and verify bid is valid
+                Transaction.Created trc = null;
+                try
+                {
+                    trc = TransactionFactory.create(tranMan, FIVE_SECONDS);
+                }catch (Exception e)
+                {
+                    System.err.println("Failed to create Transaction");
+                }
 
+                Transaction txn = trc.transaction;
+                try
+                {
+                    if(txtFldBid.getText()== null || txtFldBid.getText().isEmpty());
+                    {
+                        System.err.println("You must write a value to bid");
+                    }
+
+                    //Attempt to place bid
+                    double userBid = Double.parseDouble(txtFldBid.getText());
+                    double lotPrice = Double.parseDouble(auctionLot.lotPrice);
+
+                    auctionLot = (AuctionItem)js.readIfExists(auctionLot, txn, FIVE_HUNDRED_MILLS);
+                    if(lotPrice < userBid)
+                    {
+                        try
+                        {
+                            js.take(auctionLot, txn, FIVE_HUNDRED_MILLS);
+                            auctionLot.lotHighestBidder = "PLACEHOLDER";
+                            auctionLot.lotBids++;
+                            auctionLot.lotPrice = String.valueOf(userBid);
+
+                            js.write(auctionLot, txn, Lease.FOREVER);
+                            JOptionPane.showMessageDialog(null, "You are the highest bidder");
+                        }catch (Exception e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                }catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
             }
         });
     }
