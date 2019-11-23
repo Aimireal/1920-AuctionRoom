@@ -1,6 +1,7 @@
 package Auction;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class SellGUI
 {
@@ -15,4 +16,5 @@ public class SellGUI
     private JLabel lblLotSale;
     private JLabel lblStartingBid;
     private JLabel lblBuyNowPrice;
+
 }

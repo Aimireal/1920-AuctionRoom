@@ -14,16 +14,19 @@ import net.jini.jeri.tcp.TcpServerEndpoint;
 import net.jini.space.JavaSpace;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ContainerAdapter;
 import java.rmi.RemoteException;
 
 
-public class ShowLotsGUI extends javax.swing.JFrame implements RemoteEventListener
+public class ShowLotsGUI extends JFrame implements RemoteEventListener
 {
     private JButton btnView;
     private JButton btnSellLot;
     private JButton btnLogin;
+    private JPanel panelShowLots;
     private JScrollPane scrpanLots;
     private JList listLots;
 
@@ -39,35 +42,37 @@ public class ShowLotsGUI extends javax.swing.JFrame implements RemoteEventListen
     private static int FIVE_SECONDS = 5000;
 
 
-    public ShowLotsGUI()
+    public static void main(String[] args)
+    {
+        SwingUtilities.invokeLater(() ->
+        {
+            JFrame frame = new ShowLotsGUI("AuctionRoom");
+            frame.setVisible(true);
+        });
+    }
+
+
+    public ShowLotsGUI(String title)
     {
         super();
         setupGUI();
     }
 
-    public static void main(String[] args)
-    {
-        SwingUtilities.invokeLater(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                ShowLotsGUI setup = new ShowLotsGUI();
-                setup.setVisible(true);
-            }
-        });
-    }
 
     private void setupGUI()
     {
         try
         {
-            setupButtons();
+            //Setup GUI Components
             setTitle("AuctionRoom: Browse Lots");
+
+            this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            this.setContentPane(panelShowLots);
+            this.pack();
 
             //Find TransactionManager
             tranMan = SpaceUtils.getManager("localhost");
-            if(tranMan == null)
+            if (tranMan == null)
             {
                 System.err.println("TransactionManager not found on LocalHost");
             } else
@@ -77,7 +82,7 @@ public class ShowLotsGUI extends javax.swing.JFrame implements RemoteEventListen
 
             //Find JavaSpace
             js = SpaceUtils.getSpace("localhost");
-            if(js == null)
+            if (js == null)
             {
                 System.err.println("JavaSpace not found on LocalHost");
             } else
@@ -85,14 +90,14 @@ public class ShowLotsGUI extends javax.swing.JFrame implements RemoteEventListen
                 System.out.println("JavaSpace found");
             }
 
-            //Create Notify object
+            //Create Stub
             Exporter exporter = new BasicJeriExporter(TcpServerEndpoint.getInstance(0), new BasicILFactory(), false, true);
             try
             {
                 stub = (RemoteEventListener) exporter.export(this);
                 AuctionItem lotsTemplate = new AuctionItem();
                 js.notify((Entry) lotsTemplate, null, this.stub, Lease.FOREVER, null);
-            } catch(Exception e)
+            } catch (Exception e)
             {
                 System.err.println("Failed to setup Notify: " + e);
             }
@@ -109,15 +114,16 @@ public class ShowLotsGUI extends javax.swing.JFrame implements RemoteEventListen
                     listLots = new JList();
                     scrpanLots.setViewportView(listLots);
                     listLots.setModel(lotModel);
-                    listLots.setBounds(89, -31, 900, 500);
+                    listLots.setBounds(89, -31, 300, 400);
                 }
             }
 
-        } catch(Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
     }
+
 
     public void viewLots() throws CannotAbortException, RemoteException, UnknownTransactionException
     {
@@ -126,7 +132,7 @@ public class ShowLotsGUI extends javax.swing.JFrame implements RemoteEventListen
         try
         {
             trc = TransactionFactory.create(tranMan, FIVE_SECONDS);
-        } catch(Exception e)
+        } catch (Exception e)
         {
             System.err.println("Could not create Transaction " + e);
         }
@@ -136,18 +142,18 @@ public class ShowLotsGUI extends javax.swing.JFrame implements RemoteEventListen
         DefaultListModel lotModel = new DefaultListModel();
         try
         {
-            AuctionLotQueue queue  = (AuctionLotQueue)js.read(queueTemplate, txn, TWENTYFIVE_MILLS);
-            for(int i = 0; i < queue.counter; i++)
+            AuctionLotQueue queue = (AuctionLotQueue) js.read(queueTemplate, txn, TWENTYFIVE_MILLS);
+            for (int i = 0; i < queue.counter; i++)
             {
                 lotsTemplate.lotNum = i;
-                AuctionItem currentLot = (AuctionItem)js.readIfExists(lotsTemplate, txn, TWENTYFIVE_MILLS);
+                AuctionItem currentLot = (AuctionItem) js.readIfExists(lotsTemplate, txn, TWENTYFIVE_MILLS);
 
-                if(currentLot == null)
+                if (currentLot == null)
                 {
                     System.err.println("No lot found");
                 } else
                 {
-                    if(currentLot.lotExpired == true)
+                    if (currentLot.lotExpired == true)
                     {
                         System.err.println(currentLot.lotTitle + " has expired.");
                         lotModel.addElement("[Expired] Items");
@@ -166,12 +172,12 @@ public class ShowLotsGUI extends javax.swing.JFrame implements RemoteEventListen
                 }
             }
             txn.commit();
-        } catch(Exception e)
+        } catch (Exception e)
         {
             System.err.println("Could not read Queue " + e);
             txn.abort();
         }
-        if(lotModel.getSize() == 0)
+        if (lotModel.getSize() == 0)
         {
             lotModel.add(0, "No Lots Returned. Sell something or wait");
             System.err.println("No lots returned. Make sure at least one exists");
@@ -179,36 +185,6 @@ public class ShowLotsGUI extends javax.swing.JFrame implements RemoteEventListen
         listLots.setModel(lotModel);
     }
 
-    private void setupButtons()
-    {
-        //View lot in Purchase screen
-        btnView.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent)
-            {
-                //ToDo: reference method to build GUI here
-            }
-        });
-
-        btnSellLot.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent)
-            {
-
-            }
-        });
-
-        btnView.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent)
-            {
-
-            }
-        });
-    }
 
     @Override
     public void notify(RemoteEvent remoteEvent) throws UnknownEventException, RemoteException
@@ -224,4 +200,5 @@ public class ShowLotsGUI extends javax.swing.JFrame implements RemoteEventListen
             e.printStackTrace();
         }
     }
+
 }
