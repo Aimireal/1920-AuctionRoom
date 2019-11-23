@@ -1,9 +1,14 @@
 package Auction;
 
+import net.jini.core.event.RemoteEvent;
+import net.jini.core.event.RemoteEventListener;
+import net.jini.core.event.UnknownEventException;
+
 import javax.swing.*;
 import java.awt.*;
+import java.rmi.RemoteException;
 
-public class SellGUI
+public class SellGUI extends JFrame implements RemoteEventListener
 {
     private JButton btnCancel;
     private JTextField textField1;
@@ -17,4 +22,38 @@ public class SellGUI
     private JLabel lblStartingBid;
     private JLabel lblBuyNowPrice;
 
+    public static void main(String[] args)
+    {
+        SwingUtilities.invokeLater(() ->
+        {
+            JFrame frame = new SellGUI("AuctionRoom");
+            frame.setVisible(true);
+        });
+    }
+
+
+    public SellGUI(String title)
+    {
+        super();
+        setupGUI();
+    }
+
+
+    private void setupGUI()
+    {
+        try
+        {
+
+        } catch(Exception e)
+        {
+
+        }
+    }
+
+
+    @Override
+    public void notify(RemoteEvent remoteEvent) throws UnknownEventException, RemoteException
+    {
+
+    }
 }
