@@ -12,12 +12,14 @@ public class AccountItem implements Entry
     public String accountName;
     public String accountPassword;
 
+
     public AccountItem()
     {
         //No args template
     }
 
-    public void AccountItem(int counter, String username, String password)
+
+    public AccountItem(int counter, String username, String password)
     {
         accountNum = counter;
         accountName = username;

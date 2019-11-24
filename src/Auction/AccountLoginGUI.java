@@ -218,12 +218,19 @@ public class AccountLoginGUI extends JFrame implements RemoteEventListener
             AccountItem template = new AccountItem();
             try
             {
+                //Add a new user to the space
                 AccountQueue queue = (AccountQueue)js.take(template, txn, FIVE_SECONDS);
                 int counter = queue.counter;
+                String username = txtfldUsername.getText();
+                String password = txtfldPassword.getText();
 
-                //AccountItem newUser = new AccountItem(counter);
+                AccountItem newUser = new AccountItem(counter, username, password);
+                js.write(newUser, txn, Lease.FOREVER);
+                queue.incrementCounter();
+                txn.commit();
             }catch (Exception e)
             {
+                txn.abort();
                 e.printStackTrace();
             }
         }catch (Exception e)
