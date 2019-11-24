@@ -218,7 +218,10 @@ public class AccountLoginGUI extends JFrame implements RemoteEventListener
             AccountItem template = new AccountItem();
             try
             {
+                AccountQueue queue = (AccountQueue)js.take(template, txn, FIVE_SECONDS);
+                int counter = queue.counter;
 
+                //AccountItem newUser = new AccountItem(counter);
             }catch (Exception e)
             {
                 e.printStackTrace();

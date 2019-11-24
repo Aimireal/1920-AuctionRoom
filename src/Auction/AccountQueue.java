@@ -1,20 +1,20 @@
 /*
-    Auction.AuctionLotQueue - Used for Auction.AuctionLotStartQueue to initialise and increment auction lots
+    Auction.AccountQueue - Used for Auction.AuctionLotStartQueue to initialise and increment auction lots
  */
 
 package Auction;
 import net.jini.core.entry.Entry;
 
-public class AuctionLotQueue implements Entry
+public class AccountQueue implements Entry
 {
     public Integer counter;
 
-    public AuctionLotQueue()
+    public AccountQueue()
     {
         //No args constructor
     }
 
-    public AuctionLotQueue(int i)
+    public AccountQueue(int i)
     {
         counter = i;
     }
