@@ -4,6 +4,8 @@ import net.jini.core.event.RemoteEvent;
 import net.jini.core.event.RemoteEventListener;
 import net.jini.core.event.UnknownEventException;
 import net.jini.core.lease.Lease;
+import net.jini.core.transaction.Transaction;
+import net.jini.core.transaction.TransactionFactory;
 import net.jini.core.transaction.server.TransactionManager;
 import net.jini.export.Exporter;
 import net.jini.jeri.BasicILFactory;
@@ -115,8 +117,8 @@ public class AccountLoginGUI extends JFrame implements RemoteEventListener
             {
                 try
                 {
-                    boolean verifiedDetails = userNamePassEntered();
-                    if(verifiedDetails)
+                    boolean detailsEntered = userNamePassEntered();
+                    if(detailsEntered)
                     {
                         //Get account details and try getting a matching object
                         AccountItem accountTemplate = new AccountItem();
@@ -134,24 +136,14 @@ public class AccountLoginGUI extends JFrame implements RemoteEventListener
                             int usrID = userAccount.accountNum;
                             String usrName = userAccount.accountName;
                         }
+                    } else
+                    {
+                        System.exit(1);
                     }
                 }catch (Exception e)
                 {
                     e.printStackTrace();
                 }
-            }
-        });
-    }
-
-
-    public void createButton()
-    {
-        btnCreateAccount.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent)
-            {
-
             }
         });
     }
@@ -164,9 +156,77 @@ public class AccountLoginGUI extends JFrame implements RemoteEventListener
             @Override
             public void actionPerformed(ActionEvent actionEvent)
             {
-
+                //ToDo: Method to return to ShowLotsGUI but just closing this screen might work as it's dispose
             }
         });
+    }
+
+
+    public void createButton()
+    {
+        btnCreateAccount.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                try
+                {
+                    boolean detailsEntered = userNamePassEntered();
+                    if(detailsEntered)
+                    {
+                        //Get account details and try getting a matching object
+                        AccountItem accountTemplate = new AccountItem();
+                        accountTemplate.accountName = txtfldUsername.getText();
+
+                        userAccount = (AccountItem)js.readIfExists(accountTemplate, null, FIVE_HUNDRED_MILLS);
+                        if(userAccount != null)
+                        {
+                            //If no user account with these details exists
+                            createUser();
+                        } else
+                        {
+                            JOptionPane.showMessageDialog(null, "An account with this name exists, please choose another");
+                        }
+                    } else
+                    {
+                        System.exit(1);
+                    }
+                }catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+
+    public void createUser()
+    {
+        try
+        {
+            //Create Transaction
+            Transaction.Created trc = null;
+            try
+            {
+                trc = TransactionFactory.create(tranMan, Lease.FOREVER);
+            }catch (Exception e)
+            {
+                System.err.println("Failed to create Transaction");
+            }
+
+            Transaction txn = trc.transaction;
+            AccountItem template = new AccountItem();
+            try
+            {
+
+            }catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
 
@@ -179,12 +239,14 @@ public class AccountLoginGUI extends JFrame implements RemoteEventListener
         if(userSpecName == null || userSpecName.isEmpty())
         {
             System.err.println("You must enter in a username to continue");
+            JOptionPane.showMessageDialog(null, "You must enter in a username");
             return false;
         } else
         {
             if(userSpecPass == null || userSpecPass.isEmpty())
             {
                 System.err.println("You must enter in a password to continue");
+                JOptionPane.showMessageDialog(null, "You must enter in a password");
                 return false;
             } else
             {

@@ -24,7 +24,7 @@ import java.rmi.RemoteException;
 public class ShowLotsGUI extends JFrame implements RemoteEventListener
 {
     private JPanel panelShowLots;
-    private JScrollPane scrpanLots;
+    private JScrollPane scrPanLots;
     private JList listLots;
     private JButton btnView;
     private JButton btnSellLot;
@@ -59,8 +59,8 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
     {
         super();
 
-        //Basic setup
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.getContentPane().setLayout(null);
         this.setContentPane(panelShowLots);
         this.pack();
 
@@ -83,33 +83,12 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
         {
             System.out.println("JavaSpace found");
         }
-
-        //Methods for specific stuff on GUI components
         setupGUI();
-        btnLogin.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent)
-            {
 
-            }
-        });
-        btnView.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent)
-            {
-
-            }
-        });
-        btnSellLot.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent)
-            {
-
-            }
-        });
+        //Button methods
+        viewLotButton();
+        sellButton();
+        loginButton();
     }
 
 
@@ -133,13 +112,16 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
             setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             getContentPane().setLayout(null);
             {
-                scrpanLots = new JScrollPane();
+                /*
+                //Removed due to scrollPane being in GUI designer instead now
+                scrPanLots = new JScrollPane();
                 getContentPane().add(scrpanLots);
-                scrpanLots.setBounds(12, 12, 900, 500);
+                scrPanLots.setBounds(12, 12, 900, 500);
+                */
                 {
                     ListModel lotModel = new DefaultComboBoxModel(new String[]{"No Lots Found"});
                     listLots = new JList();
-                    scrpanLots.setViewportView(listLots);
+                    scrPanLots.setViewportView(listLots);
                     listLots.setModel(lotModel);
                     listLots.setBounds(89, -31, 300, 400);
                 }
@@ -180,7 +162,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
                     System.err.println("No lot found");
                 } else
                 {
-                    if (currentLot.lotExpired == true)
+                    if (currentLot.lotExpired)
                     {
                         System.err.println(currentLot.lotTitle + " has expired.");
                         lotModel.addElement("[Expired] Items");
@@ -215,19 +197,40 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
 
     private void viewLotButton()
     {
+        btnView.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent)
+            {
 
+            }
+        });
     }
 
 
     private void sellButton()
     {
+        btnSellLot.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent)
+            {
 
+            }
+        });
     }
 
 
     private void loginButton()
     {
+        btnLogin.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent)
+            {
 
+            }
+        });
     }
 
 
