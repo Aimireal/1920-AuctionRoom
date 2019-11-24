@@ -26,6 +26,9 @@ public class PurchaseGUI extends JFrame implements RemoteEventListener
     private JButton btnCancel;
     private JButton btnBuyNow;
     private JButton btnPlaceBid;
+    private JLabel lblLotDesc;
+    private JLabel lblLotTitle;
+    private JLabel lblCurrentBid;
 
     private JavaSpace js;
     private TransactionManager tranMan;
@@ -33,7 +36,12 @@ public class PurchaseGUI extends JFrame implements RemoteEventListener
 
     private AuctionItem auctionLot;
 
-    private String loggedUser = "PLACEHOLDER"; //Currently logged in user
+    public String loggedUser = "PLACEHOLDER"; //Currently logged in user
+    public int curLotNum = 0; //This might not be needed, or we can use this to pull details instead of passing on launch
+    public String curLotTitle = "TITLE";
+    public String curLotDesc = "DESC";
+    public String curLotBidPrice = "0";
+    public String curLotBuyPrice = "0";
 
     private static int FIVE_HUNDRED_MILLS = 500;
     private static int FIVE_SECONDS = 5000;
@@ -106,6 +114,13 @@ public class PurchaseGUI extends JFrame implements RemoteEventListener
         {
             e.printStackTrace();
         }
+
+        //Insert details for the selected lot into GUI
+        //ToDo: Adding checks for values before this is an idea, but has been checked when we placed into space
+        lblLotTitle.setText(curLotTitle);
+        lblLotDesc.setText(curLotDesc);
+        lblCurrentBid.setText(curLotBidPrice);
+        txtFldBuyNowPrice.setText("£" + curLotBuyPrice);
     }
 
 
