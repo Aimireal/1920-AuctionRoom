@@ -43,7 +43,7 @@ public class SellGUI extends JFrame implements RemoteEventListener
     }
 
 
-    public SellGUI(String title)
+    private SellGUI(String title)
     {
         super();
 
@@ -73,6 +73,7 @@ public class SellGUI extends JFrame implements RemoteEventListener
         }
 
         setupGUI();
+        cancelButton();
     }
 
 
@@ -169,15 +170,6 @@ public class SellGUI extends JFrame implements RemoteEventListener
                     }
                 }
             });
-
-            btnCancel.addActionListener(new ActionListener()
-            {
-                @Override
-                public void actionPerformed(ActionEvent actionEvent)
-                {
-                    //ToDo: Code to move back to main form. Need to make all nav buttons work
-                }
-            });
         } catch(Exception e)
         {
             e.printStackTrace();
@@ -185,9 +177,22 @@ public class SellGUI extends JFrame implements RemoteEventListener
     }
 
 
+    private void cancelButton()
+    {
+        btnCancel.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                //ToDo: Close screen and return to ShowLotsGUI/Unlock that
+            }
+        });
+    }
+
+
     @Override
     public void notify(RemoteEvent remoteEvent) throws UnknownEventException, RemoteException
     {
-
+        //ToDo: See if needed, otherwise remove RemoteEventListener. Other than something on main to refresh if possible/needed.
     }
 }

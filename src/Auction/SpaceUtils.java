@@ -11,6 +11,7 @@ import net.jini.core.transaction.server.TransactionManager;
 
 public class SpaceUtils
 {
+    //This code is from Gary, it has been left mostly unchanged other than localhost addition
     public static JavaSpace getSpace(String hostname)
     {
         if(System.getSecurityManager() == null)

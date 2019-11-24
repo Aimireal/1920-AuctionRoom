@@ -143,7 +143,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
             trc = TransactionFactory.create(tranMan, FIVE_SECONDS);
         } catch (Exception e)
         {
-            System.err.println("Could not create Transaction " + e);
+            System.err.println("Failed to create Transaction");
         }
         Transaction txn = trc.transaction;
 
@@ -202,7 +202,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
             @Override
             public void actionPerformed(ActionEvent actionEvent)
             {
-
+                //ToDo: Launch PurchaseGUI with the Lot number and pull details off of that
             }
         });
     }
@@ -215,7 +215,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
             @Override
             public void actionPerformed(ActionEvent actionEvent)
             {
-
+                //ToDo: If logged in, launch SellGUI
             }
         });
     }
@@ -228,7 +228,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
             @Override
             public void actionPerformed(ActionEvent actionEvent)
             {
-
+                //ToDo: Launch the AccountLoginGUI form and write back the LoggedIn and AccountNumber here
             }
         });
     }

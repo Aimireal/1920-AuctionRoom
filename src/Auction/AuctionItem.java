@@ -47,6 +47,7 @@ public class AuctionItem implements Entry
         lotExpired = false;
     }
 
+
     public void addBid()
     {
         lotBids++;

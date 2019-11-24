@@ -1,6 +1,5 @@
 package Auction;
 
-import net.jini.core.entry.Entry;
 import net.jini.core.event.RemoteEvent;
 import net.jini.core.event.RemoteEventListener;
 import net.jini.core.event.UnknownEventException;
@@ -13,10 +12,8 @@ import net.jini.jeri.BasicILFactory;
 import net.jini.jeri.BasicJeriExporter;
 import net.jini.jeri.tcp.TcpServerEndpoint;
 import net.jini.space.JavaSpace;
-import org.apache.river.api.security.DelegateSecurityManager;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
@@ -35,6 +32,8 @@ public class PurchaseGUI extends JFrame implements RemoteEventListener
     private RemoteEventListener stub;
 
     private AuctionItem auctionLot;
+
+    private String loggedUser = "PLACEHOLDER"; //Currently logged in user
 
     private static int FIVE_HUNDRED_MILLS = 500;
     private static int FIVE_SECONDS = 5000;
@@ -110,14 +109,14 @@ public class PurchaseGUI extends JFrame implements RemoteEventListener
     }
 
 
-    public void bidButton()
+    private void bidButton()
     {
         btnPlaceBid.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent actionEvent)
             {
-                //Create transaction and verify bid is valid
+                //Create transaction
                 Transaction.Created trc = null;
                 try
                 {
@@ -156,7 +155,7 @@ public class PurchaseGUI extends JFrame implements RemoteEventListener
                             txn.commit();
                         }catch (NumberFormatException e)
                         {
-                            JOptionPane.showMessageDialog(null, "Something went wrong, details are right and try again");
+                            JOptionPane.showMessageDialog(null, "Something went wrong, check bids value is right and try again");
                         }
                     } else
                     {
@@ -172,27 +171,52 @@ public class PurchaseGUI extends JFrame implements RemoteEventListener
     }
 
 
-    public void buyButton()
+    private void buyButton()
     {
         btnBuyNow.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent actionEvent)
             {
+                //Create transaction
+                Transaction.Created trc = null;
+                try
+                {
+                    trc = TransactionFactory.create(tranMan, FIVE_SECONDS);
+                }catch (Exception e)
+                {
+                    System.err.println("Failed to create Transaction");
+                }
 
+                //Check if value has been given for buy-it-now
+                if(txtFldBuyNowPrice.getText()== null || txtFldBuyNowPrice.getText().isEmpty())
+                {
+                    System.err.println("You must enter a bid");
+                    System.exit(1);
+                }
+
+                //Try purchase
+                Transaction txn = trc.transaction;
+                try
+                {
+                    //ToDo: Close the lot and notify user it has been purchased for X amount
+                }catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
             }
         });
     }
 
 
-    public void cancelButton()
+    private void cancelButton()
     {
         btnCancel.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent actionEvent)
             {
-
+                //ToDo: Close screen and return to ShowLotsGUI/Unlock that
             }
         });
     }
@@ -201,6 +225,17 @@ public class PurchaseGUI extends JFrame implements RemoteEventListener
     @Override
     public void notify(RemoteEvent remoteEvent) throws UnknownEventException, RemoteException
     {
+        AuctionItem template = new AuctionItem();
+        template.lotHighestBidder = loggedUser; //ToDo: Pull through the current user ID
+        template.lotExpired = true;
 
+        try
+        {
+            AuctionItem notifyLot = (AuctionItem)js.readIfExists(template, null, FIVE_SECONDS);
+            JOptionPane.showMessageDialog(null, "Well done " + loggedUser + " you won the auction, please pay for the item");
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 }

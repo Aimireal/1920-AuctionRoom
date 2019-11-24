@@ -47,7 +47,7 @@ public class AccountLoginGUI extends JFrame implements RemoteEventListener
     }
 
 
-    public AccountLoginGUI(String title)
+    private AccountLoginGUI(String title)
     {
         super();
 
@@ -108,7 +108,7 @@ public class AccountLoginGUI extends JFrame implements RemoteEventListener
     }
 
 
-    public void loginButton()
+    private void loginButton()
     {
         btnLogin.addActionListener(new ActionListener()
         {
@@ -149,20 +149,20 @@ public class AccountLoginGUI extends JFrame implements RemoteEventListener
     }
 
 
-    public void cancelButton()
+    private void cancelButton()
     {
         btnCancel.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent actionEvent)
             {
-                //ToDo: Method to return to ShowLotsGUI but just closing this screen might work as it's dispose
+                //ToDo: Close screen and return to ShowLotsGUI/Unlock that
             }
         });
     }
 
 
-    public void createButton()
+    private void createButton()
     {
         btnCreateAccount.addActionListener(new ActionListener()
         {
@@ -200,7 +200,7 @@ public class AccountLoginGUI extends JFrame implements RemoteEventListener
     }
 
 
-    public void createUser()
+    private void createUser()
     {
         try
         {
@@ -231,7 +231,7 @@ public class AccountLoginGUI extends JFrame implements RemoteEventListener
             }catch (Exception e)
             {
                 txn.abort();
-                e.printStackTrace();
+                System.err.println("Failed to Create User");
             }
         }catch (Exception e)
         {
@@ -240,7 +240,7 @@ public class AccountLoginGUI extends JFrame implements RemoteEventListener
     }
 
 
-    public boolean userNamePassEntered()
+    private boolean userNamePassEntered()
     {
         //Check that a username and password was entered
         String userSpecName = txtfldUsername.getText();
@@ -248,14 +248,12 @@ public class AccountLoginGUI extends JFrame implements RemoteEventListener
 
         if(userSpecName == null || userSpecName.isEmpty())
         {
-            System.err.println("You must enter in a username to continue");
             JOptionPane.showMessageDialog(null, "You must enter in a username");
             return false;
         } else
         {
             if(userSpecPass == null || userSpecPass.isEmpty())
             {
-                System.err.println("You must enter in a password to continue");
                 JOptionPane.showMessageDialog(null, "You must enter in a password");
                 return false;
             } else
@@ -269,6 +267,6 @@ public class AccountLoginGUI extends JFrame implements RemoteEventListener
     @Override
     public void notify(RemoteEvent remoteEvent) throws UnknownEventException, RemoteException
     {
-
+        //ToDo: See if needed, otherwise remove RemoteEventListener. Might be handy to send the login event to main form?
     }
 }
