@@ -5,7 +5,7 @@
 package Auction;
 import net.jini.core.entry.*;
 
-public class AccountItem
+public class AccountItem implements Entry
 {
     //Variables
     public Integer accountNum;

@@ -37,8 +37,11 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
     private TransactionManager tranMan;
     private RemoteEventListener stub;
 
+    private boolean usrLoggedIn = false; //This can be used to check whether someone is logged in
+    private String loggedUsrID; //Store the user ID that is logged in for purchases perhaps
+    private String loggedUsrName; //Might add into UI to show who is logged in but idk
+
     private static int TWENTYFIVE_MILLS = 250;
-    private static int TWO_SECONDS = 2000;
     private static int FIVE_SECONDS = 5000;
 
 
@@ -57,8 +60,6 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
         super();
 
         //Basic setup
-        setTitle("AuctionRoom");
-
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setContentPane(panelShowLots);
         this.pack();
@@ -85,6 +86,30 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
 
         //Methods for specific stuff on GUI components
         setupGUI();
+        btnLogin.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+
+            }
+        });
+        btnView.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+
+            }
+        });
+        btnSellLot.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+
+            }
+        });
     }
 
 
@@ -185,6 +210,24 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
             System.err.println("No lots returned. Make sure at least one exists");
         }
         listLots.setModel(lotModel);
+    }
+
+
+    private void viewLotButton()
+    {
+
+    }
+
+
+    private void sellButton()
+    {
+
+    }
+
+
+    private void loginButton()
+    {
+
     }
 
 

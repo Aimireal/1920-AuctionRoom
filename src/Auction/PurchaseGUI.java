@@ -37,7 +37,6 @@ public class PurchaseGUI extends JFrame implements RemoteEventListener
     private AuctionItem auctionLot;
 
     private static int FIVE_HUNDRED_MILLS = 500;
-    private static int TWO_SECONDS = 2000;
     private static int FIVE_SECONDS = 5000;
 
 
@@ -56,6 +55,7 @@ public class PurchaseGUI extends JFrame implements RemoteEventListener
         super();
 
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.getContentPane().setLayout(null);
         this.setContentPane(panelBuyLots);
         this.pack();
 
