@@ -14,6 +14,8 @@ import net.jini.jeri.tcp.TcpServerEndpoint;
 import net.jini.space.JavaSpace;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -109,6 +111,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
             }
 
             //Setting up lots display stuff
+            listLots.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             getContentPane().setLayout(null);
             {
@@ -127,6 +130,19 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
                 }
             }
 
+            //List Selection
+            listLots.addListSelectionListener(new ListSelectionListener()
+            {
+                @Override
+                public void valueChanged(ListSelectionEvent listSelectionEvent)
+                {
+                    if(!listSelectionEvent.getValueIsAdjusting())
+                    {
+                        System.out.println("Selected " + listLots.getSelectedValue().toString());
+                        //ToDo: Write the lot information to a String to be parsed by Buy
+                    }
+                }
+            });
         } catch (Exception e)
         {
             e.printStackTrace();
@@ -165,7 +181,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
                     if (currentLot.lotExpired)
                     {
                         System.err.println(currentLot.lotTitle + " has expired.");
-                        lotModel.addElement("[Expired] Items");
+                        lotModel.addElement("[Expired] " + currentLot.lotTitle);
                     } else
                     {
                         System.out.println(currentLot.lotTitle + " added to JList");
@@ -191,7 +207,6 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
             lotModel.add(0, "No Lots Returned. Sell something or wait");
             System.err.println("No lots returned. Make sure at least one exists");
         }
-        listLots.setModel(lotModel);
     }
 
 
@@ -203,6 +218,8 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
             public void actionPerformed(ActionEvent actionEvent)
             {
                 //ToDo: Launch PurchaseGUI with the Lot number and pull details off of that
+                JFrame newWindow = PurchaseGUI.main();
+                newWindow.setVisible(true);
             }
         });
     }
@@ -216,6 +233,14 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
             public void actionPerformed(ActionEvent actionEvent)
             {
                 //ToDo: If logged in, launch SellGUI
+                if (!usrLoggedIn)
+                {
+                    JOptionPane.showMessageDialog(null, "You must be logged in to do this");
+                } else
+                {
+                    JFrame newWindow = SellGUI.main();
+                    newWindow.setVisible(true);
+                }
             }
         });
     }
@@ -229,6 +254,18 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
             public void actionPerformed(ActionEvent actionEvent)
             {
                 //ToDo: Launch the AccountLoginGUI form and write back the LoggedIn and AccountNumber here
+                if(usrLoggedIn)
+                {
+                    JOptionPane.showMessageDialog(null, "You are already logged in, would you like to log out?");
+                    //ToDo: Log out function to go here, might just be able get away with resetting strings
+                    loggedUsrID = "";
+                    loggedUsrName = "";
+                    usrLoggedIn = false;
+                } else
+                {
+                    JFrame newWindow = AccountLoginGUI.main();
+                    newWindow.setVisible(true);
+                }
             }
         });
     }

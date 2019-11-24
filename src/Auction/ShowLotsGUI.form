@@ -46,7 +46,12 @@
         </constraints>
         <properties/>
         <border type="none"/>
-        <children/>
+        <children>
+          <component id="a1ab5" class="javax.swing.JList" binding="listLots">
+            <constraints/>
+            <properties/>
+          </component>
+        </children>
       </scrollpane>
     </children>
   </grid>

@@ -36,8 +36,8 @@ public class PurchaseGUI extends JFrame implements RemoteEventListener
 
     private AuctionItem auctionLot;
 
-    public String loggedUser = "PLACEHOLDER"; //Currently logged in user
     public int curLotNum = 0; //This might not be needed, or we can use this to pull details instead of passing on launch
+    public String loggedUser = "PLACEHOLDER"; //Currently logged in user
     public String curLotTitle = "TITLE";
     public String curLotDesc = "DESC";
     public String curLotBidPrice = "0";
@@ -47,13 +47,14 @@ public class PurchaseGUI extends JFrame implements RemoteEventListener
     private static int FIVE_SECONDS = 5000;
 
 
-    public static void main(String[] args)
+    public static JFrame main()
     {
         SwingUtilities.invokeLater(() ->
         {
             JFrame frame = new PurchaseGUI("AuctionRoom");
             frame.setVisible(true);
         });
+        return null;
     }
 
 
@@ -85,6 +86,8 @@ public class PurchaseGUI extends JFrame implements RemoteEventListener
         {
             System.out.println("JavaSpace found");
         }
+
+        //ToDo: On the currently selected lot from ShowLotsGUI, pull data here
 
         setupGUI();
 

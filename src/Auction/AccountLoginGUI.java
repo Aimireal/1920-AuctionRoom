@@ -37,13 +37,14 @@ public class AccountLoginGUI extends JFrame implements RemoteEventListener
     private static int FIVE_SECONDS = 5000;
 
 
-    public static void main(String[] args)
+    public static JFrame main()
     {
         SwingUtilities.invokeLater(() ->
         {
             JFrame frame = new AccountLoginGUI("AuctionRoom");
             frame.setVisible(true);
         });
+        return null;
     }
 
 
