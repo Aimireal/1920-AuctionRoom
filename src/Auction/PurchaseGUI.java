@@ -215,6 +215,7 @@ public class PurchaseGUI extends JFrame implements RemoteEventListener
                 try
                 {
                     //ToDo: Close the lot and notify user it has been purchased for X amount
+                    //We can go about this by setting the bid price to buy now and the expired boolean to true
                 }catch (Exception e)
                 {
                     e.printStackTrace();
@@ -247,7 +248,8 @@ public class PurchaseGUI extends JFrame implements RemoteEventListener
         try
         {
             AuctionItem notifyLot = (AuctionItem)js.readIfExists(template, null, FIVE_SECONDS);
-            JOptionPane.showMessageDialog(null, "Well done " + loggedUser + " you won the auction, please pay for the item");
+            JOptionPane.showMessageDialog(null, "Well done " + loggedUser + " you won the auction for £" +
+                    curLotBidPrice + ", please pay for the item as soon as possible");
         }catch (Exception e)
         {
             e.printStackTrace();
