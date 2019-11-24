@@ -15,7 +15,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
 
-public class SellGUI extends JFrame implements RemoteEventListener
+public class SellGUI extends JDialog implements RemoteEventListener
 {
     private JPanel panelSellLots;
     private JTextField txtFldTitle;
@@ -33,12 +33,12 @@ public class SellGUI extends JFrame implements RemoteEventListener
     private static int FIVE_SECONDS = 5000;
 
 
-    public static JFrame main()
+    public static JDialog main()
     {
         SwingUtilities.invokeLater(() ->
         {
-            JFrame frame = new SellGUI("AuctionRoom");
-            frame.setVisible(true);
+            JDialog dialog = new SellGUI("AuctionRoom");
+            dialog.setVisible(true);
         });
         return null;
     }
@@ -48,7 +48,7 @@ public class SellGUI extends JFrame implements RemoteEventListener
     {
         super();
 
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         this.getContentPane().setLayout(null);
         this.setContentPane(panelSellLots);
         this.pack();
@@ -185,7 +185,7 @@ public class SellGUI extends JFrame implements RemoteEventListener
             @Override
             public void actionPerformed(ActionEvent actionEvent)
             {
-                //ToDo: Close screen and return to ShowLotsGUI/Unlock that
+                dispose();
             }
         });
     }

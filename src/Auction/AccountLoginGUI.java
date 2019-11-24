@@ -18,7 +18,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
 
-public class AccountLoginGUI extends JFrame implements RemoteEventListener
+public class AccountLoginGUI extends JDialog implements RemoteEventListener
 {
     private JPanel panelLogin;
     private JTextField txtfldUsername;
@@ -37,12 +37,12 @@ public class AccountLoginGUI extends JFrame implements RemoteEventListener
     private static int FIVE_SECONDS = 5000;
 
 
-    public static JFrame main()
+    public static JDialog main()
     {
         SwingUtilities.invokeLater(() ->
         {
-            JFrame frame = new AccountLoginGUI("AuctionRoom");
-            frame.setVisible(true);
+            JDialog dialog = new AccountLoginGUI("AuctionRoom");
+            dialog.setVisible(true);
         });
         return null;
     }
@@ -53,10 +53,11 @@ public class AccountLoginGUI extends JFrame implements RemoteEventListener
         super();
 
         //Basic setup
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         this.getContentPane().setLayout(null);
         this.setContentPane(panelLogin);
         this.pack();
+        this.setModalityType(DEFAULT_MODALITY_TYPE);
 
         //Find TransactionManager
         tranMan = SpaceUtils.getManager("localhost");
@@ -157,7 +158,7 @@ public class AccountLoginGUI extends JFrame implements RemoteEventListener
             @Override
             public void actionPerformed(ActionEvent actionEvent)
             {
-                //ToDo: Close screen and return to ShowLotsGUI/Unlock that
+                dispose();
             }
         });
     }

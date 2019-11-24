@@ -217,9 +217,9 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
             @Override
             public void actionPerformed(ActionEvent actionEvent)
             {
-                //ToDo: Launch PurchaseGUI with the Lot number and pull details off of that
-                JFrame newWindow = PurchaseGUI.main();
-                newWindow.setVisible(true);
+                //ToDo: Hide this frame while
+                JDialog newWindow = PurchaseGUI.main();
+                //ToDo: Disable ShowLotsGUI while active
             }
         });
     }
@@ -232,14 +232,13 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
             @Override
             public void actionPerformed(ActionEvent actionEvent)
             {
-                //ToDo: If logged in, launch SellGUI
                 if (!usrLoggedIn)
                 {
                     JOptionPane.showMessageDialog(null, "You must be logged in to do this");
                 } else
                 {
-                    JFrame newWindow = SellGUI.main();
-                    newWindow.setVisible(true);
+                    JDialog newWindow = SellGUI.main();
+                    //ToDo: Disable ShowLotsGUI while active
                 }
             }
         });
@@ -253,7 +252,6 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
             @Override
             public void actionPerformed(ActionEvent actionEvent)
             {
-                //ToDo: Launch the AccountLoginGUI form and write back the LoggedIn and AccountNumber here
                 if(usrLoggedIn)
                 {
                     JOptionPane.showMessageDialog(null, "You are already logged in, would you like to log out?");
@@ -263,8 +261,8 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
                     usrLoggedIn = false;
                 } else
                 {
-                    JFrame newWindow = AccountLoginGUI.main();
-                    newWindow.setVisible(true);
+                    //ToDo: Make this properly disable this frame. Might want to be changing subscreens to JDialogs
+                    JDialog dialog = AccountLoginGUI.main();
                 }
             }
         });
@@ -277,10 +275,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
         try
         {
             viewLots();
-        } catch (CannotAbortException e)
-        {
-            e.printStackTrace();
-        } catch (UnknownTransactionException e)
+        } catch (CannotAbortException | UnknownTransactionException e)
         {
             e.printStackTrace();
         }
