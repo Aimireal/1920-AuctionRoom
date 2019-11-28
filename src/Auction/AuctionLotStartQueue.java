@@ -11,7 +11,7 @@ public class AuctionLotStartQueue
 {
     public static void main(String args[])
     {
-        JavaSpace js = SpaceUtils.getSpace("localhost");
+        JavaSpace js = SpaceUtils.getSpace("waterloo");
         if(js == null)
         {
             System.err.println("Failed to find JavaSpace");
@@ -22,10 +22,20 @@ public class AuctionLotStartQueue
         {
             AuctionLotQueue queue = new AuctionLotQueue(0);
             js.write(queue, null, Lease.FOREVER);
-            System.out.println("Queue made and written to space");
+            System.out.println("AuctionLotQueue made and written to space");
         } catch(Exception e)
         {
-            System.err.println("Error. Unable to create Queue or write to space");
+            System.err.println("Error. Unable to create AuctionLotQueue or write to space");
+        }
+
+        try
+        {
+            AccountQueue accQueue = new AccountQueue(0);
+            js.write(accQueue, null, Lease.FOREVER);
+            System.out.println("AccountQueue made and written to space");
+        } catch(Exception e)
+        {
+            System.err.println("Error. Unable to create AccountQueue or write to space");
         }
     }
 }

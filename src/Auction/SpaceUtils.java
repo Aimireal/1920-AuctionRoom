@@ -38,7 +38,7 @@ public class SpaceUtils
 
     public static JavaSpace getSpace()
     {
-        return getSpace("localhost");
+        return getSpace("waterloo");
     }
 
     public static TransactionManager getManager(String hostname)
@@ -67,6 +67,6 @@ public class SpaceUtils
 
     public static TransactionManager getManager()
     {
-        return getManager("localhost");
+        return getManager("waterloo");
     }
 }

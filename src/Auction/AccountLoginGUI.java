@@ -16,6 +16,7 @@ import net.jini.space.JavaSpace;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public class AccountLoginGUI extends JDialog implements RemoteEventListener
@@ -60,7 +61,7 @@ public class AccountLoginGUI extends JDialog implements RemoteEventListener
         this.setModalityType(DEFAULT_MODALITY_TYPE);
 
         //Find TransactionManager
-        tranMan = SpaceUtils.getManager("localhost");
+        tranMan = SpaceUtils.getManager("waterloo");
         if (tranMan == null)
         {
             System.err.println("TransactionManager not found on LocalHost");
@@ -70,7 +71,7 @@ public class AccountLoginGUI extends JDialog implements RemoteEventListener
         }
 
         //Find JavaSpace
-        js = SpaceUtils.getSpace("localhost");
+        js = SpaceUtils.getSpace("waterloo");
         if (js == null)
         {
             System.err.println("JavaSpace not found on LocalHost");
@@ -96,9 +97,9 @@ public class AccountLoginGUI extends JDialog implements RemoteEventListener
             Exporter exporter = new BasicJeriExporter(TcpServerEndpoint.getInstance(0), new BasicILFactory(), false, true);
             try
             {
-                stub = (RemoteEventListener) exporter.export(this);
-                AuctionItem lotsTemplate = new AuctionItem();
-                js.notify(lotsTemplate, null, this.stub, Lease.FOREVER, null);
+                stub = (RemoteEventListener) exporter.export((Remote) this);
+                AccountItem accountTemplate = new AccountItem();
+                js.notify(accountTemplate, null, this.stub, Lease.FOREVER, null);
             } catch (Exception e)
             {
                 e.printStackTrace();
@@ -138,9 +139,6 @@ public class AccountLoginGUI extends JDialog implements RemoteEventListener
                             int usrID = userAccount.accountNum;
                             String usrName = userAccount.accountName;
                         }
-                    } else
-                    {
-                        System.exit(1);
                     }
                 }catch (Exception e)
                 {
@@ -181,17 +179,13 @@ public class AccountLoginGUI extends JDialog implements RemoteEventListener
                         accountTemplate.accountName = txtfldUsername.getText();
 
                         userAccount = (AccountItem)js.readIfExists(accountTemplate, null, FIVE_HUNDRED_MILLS);
-                        if(userAccount != null)
+                        if(userAccount == null)
                         {
-                            //If no user account with these details exists
                             createUser();
                         } else
                         {
                             JOptionPane.showMessageDialog(null, "An account with this name exists, please choose another");
                         }
-                    } else
-                    {
-                        System.exit(1);
                     }
                 }catch (Exception e)
                 {
@@ -230,10 +224,13 @@ public class AccountLoginGUI extends JDialog implements RemoteEventListener
                 js.write(newUser, txn, Lease.FOREVER);
                 queue.incrementCounter();
                 txn.commit();
+
+                System.out.print("Successfully Created User");
             }catch (Exception e)
             {
                 txn.abort();
                 System.err.println("Failed to Create User");
+                System.err.println("Username " + txtfldUsername.getText() + " Password " + txtfldPassword.getText());
             }
         }catch (Exception e)
         {
