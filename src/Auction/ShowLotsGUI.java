@@ -215,9 +215,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
             @Override
             public void actionPerformed(ActionEvent actionEvent)
             {
-                //ToDo: Hide this frame while
-                JDialog newWindow = PurchaseGUI.main();
-                //ToDo: Disable ShowLotsGUI while active
+                JDialog dialog = PurchaseGUI.main();
             }
         });
     }
@@ -235,6 +233,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
                     JOptionPane.showMessageDialog(null, "You must be logged in to do this");
                 } else
                 {
+                    //ToDo: Pass in LoggedIn String similar to how we did login
                     JDialog dialog = SellGUI.main();
                 }
             }
@@ -252,7 +251,6 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
                 if(loggedIn)
                 {
                     JOptionPane.showMessageDialog(null, "You are already logged in, would you like to log out?");
-                    //ToDo: Log out function to go here, might just be able get away with resetting strings
                     loggedUsrID = "";
                     loggedUsrName = "";
                     loggedIn = false;
@@ -262,6 +260,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
                     AccountLoginGUI dialog = new AccountLoginGUI("AuctionRoom");
                     dialog.setVisible(true);
                     loggedIn = dialog.loggedIn;
+                    loggedUsrName = dialog.loggedAs;
                 }
             }
         });

@@ -40,6 +40,7 @@ public class AccountLoginGUI extends JDialog
     private static int FIVE_SECONDS = 5000;
 
     public boolean loggedIn = false;
+    public String loggedAs;
 
 
     public static JDialog main()
@@ -123,8 +124,8 @@ public class AccountLoginGUI extends JDialog
                         } else
                         {
                             loggedIn = true;
-                            String usrName = userAccount.accountName;
-                            JOptionPane.showMessageDialog(null, "Successfully logged in as " + usrName);
+                            loggedAs = userAccount.accountName;
+                            JOptionPane.showMessageDialog(null, "Successfully logged in as " + loggedAs);
                             dispose();
                         }
                     }
