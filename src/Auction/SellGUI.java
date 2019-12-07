@@ -54,7 +54,7 @@ public class SellGUI extends JDialog implements RemoteEventListener
         this.pack();
 
         //Find TransactionManager
-        tranMan = SpaceUtils.getManager("waterloo");
+        tranMan = SpaceUtils.getManager("localhost");
         if (tranMan == null)
         {
             System.err.println("TransactionManager not found on LocalHost");
@@ -64,7 +64,7 @@ public class SellGUI extends JDialog implements RemoteEventListener
         }
 
         //Find JavaSpace
-        js = SpaceUtils.getSpace("waterloo");
+        js = SpaceUtils.getSpace("localhost");
         if (js == null)
         {
             System.err.println("JavaSpace not found on LocalHost");
@@ -101,38 +101,38 @@ public class SellGUI extends JDialog implements RemoteEventListener
                         if(title == null || title.isEmpty())
                         {
                             System.err.println("You need a title");
-                            System.exit(1);
+                            return;
                         }
 
                         if(description == null || description.isEmpty())
                         {
                             System.err.println("You need a description");
-                            System.exit(1);
+                            return;
                         }
 
                         if(price == null || price.isEmpty())
                         {
                             System.err.println("You need a starting bid");
-                            System.exit(1);
+                            return;
                         } else
                         {
                             if(!price.matches("[0-9.]*"))
                             {
                                 System.err.println("Enter numbers");
-                                System.exit(1);
+                                return;
                             }
                         }
 
                         if(durString == null || durString.isEmpty())
                         {
                             System.err.println("You to give a duration");
-                            System.exit(1);
+                            return;
                         } else 
                         {
                             if(Long.parseLong(durString) < 0)
                             {
                                 System.err.println("You must give a positive duration");
-                                System.exit(1);
+                                return;
                             } else 
                             {
                                 duration = Long.parseLong(durString);

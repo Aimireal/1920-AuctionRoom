@@ -68,7 +68,7 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
         this.pack();
 
         //Find TransactionManager
-        tranMan = SpaceUtils.getManager("waterloo");
+        tranMan = SpaceUtils.getManager("localhost");
         if (tranMan == null)
         {
             System.err.println("TransactionManager not found on LocalHost");
@@ -78,7 +78,7 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
         }
 
         //Find JavaSpace
-        js = SpaceUtils.getSpace("waterloo");
+        js = SpaceUtils.getSpace("localhost");
         if (js == null)
         {
             System.err.println("JavaSpace not found on LocalHost");

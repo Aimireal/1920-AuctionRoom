@@ -16,10 +16,8 @@ import net.jini.space.JavaSpace;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ContainerAdapter;
 import java.rmi.RemoteException;
 
 
@@ -39,7 +37,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
     private TransactionManager tranMan;
     private RemoteEventListener stub;
 
-    private boolean usrLoggedIn = false; //This can be used to check whether someone is logged in
+    private boolean loggedIn = false; //This can be used to check whether someone is logged in
     private String loggedUsrID; //Store the user ID that is logged in for purchases perhaps
     private String loggedUsrName; //Might add into UI to show who is logged in but idk
 
@@ -67,7 +65,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
         this.pack();
 
         //Find TransactionManager
-        tranMan = SpaceUtils.getManager("waterloo");
+        tranMan = SpaceUtils.getManager("localhost");
         if (tranMan == null)
         {
             System.err.println("TransactionManager not found on LocalHost");
@@ -77,7 +75,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
         }
 
         //Find JavaSpace
-        js = SpaceUtils.getSpace("waterloo");
+        js = SpaceUtils.getSpace("localhost");
         if (js == null)
         {
             System.err.println("JavaSpace not found on LocalHost");
@@ -232,13 +230,12 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
             @Override
             public void actionPerformed(ActionEvent actionEvent)
             {
-                if (!usrLoggedIn)
+                if (!loggedIn)
                 {
                     JOptionPane.showMessageDialog(null, "You must be logged in to do this");
                 } else
                 {
-                    JDialog newWindow = SellGUI.main();
-                    //ToDo: Disable ShowLotsGUI while active
+                    JDialog dialog = SellGUI.main();
                 }
             }
         });
@@ -252,17 +249,19 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
             @Override
             public void actionPerformed(ActionEvent actionEvent)
             {
-                if(usrLoggedIn)
+                if(loggedIn)
                 {
                     JOptionPane.showMessageDialog(null, "You are already logged in, would you like to log out?");
                     //ToDo: Log out function to go here, might just be able get away with resetting strings
                     loggedUsrID = "";
                     loggedUsrName = "";
-                    usrLoggedIn = false;
+                    loggedIn = false;
                 } else
                 {
-                    //ToDo: Make this properly disable this frame. Might want to be changing subscreens to JDialogs
-                    JDialog dialog = AccountLoginGUI.main();
+                    //Run the AccountLoginGUI class and return the loggedIn boolean from there using Modality
+                    AccountLoginGUI dialog = new AccountLoginGUI("AuctionRoom");
+                    dialog.setVisible(true);
+                    loggedIn = dialog.loggedIn;
                 }
             }
         });

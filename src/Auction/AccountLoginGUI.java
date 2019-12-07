@@ -14,12 +14,13 @@ import net.jini.jeri.tcp.TcpServerEndpoint;
 import net.jini.space.JavaSpace;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-public class AccountLoginGUI extends JDialog implements RemoteEventListener
+public class AccountLoginGUI extends JDialog
 {
     private JPanel panelLogin;
     private JTextField txtfldUsername;
@@ -35,7 +36,10 @@ public class AccountLoginGUI extends JDialog implements RemoteEventListener
     private AccountItem userAccount;
 
     private static int FIVE_HUNDRED_MILLS = 500;
+    private static int TWO_SECONDS = 2000;
     private static int FIVE_SECONDS = 5000;
+
+    public boolean loggedIn = false;
 
 
     public static JDialog main()
@@ -49,9 +53,11 @@ public class AccountLoginGUI extends JDialog implements RemoteEventListener
     }
 
 
-    private AccountLoginGUI(String title)
+    public AccountLoginGUI(String title)
     {
-        super();
+        //super();
+        super((Frame) null, true);
+        setModalityType(ModalityType.APPLICATION_MODAL);
 
         //Basic setup
         this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -61,7 +67,7 @@ public class AccountLoginGUI extends JDialog implements RemoteEventListener
         this.setModalityType(DEFAULT_MODALITY_TYPE);
 
         //Find TransactionManager
-        tranMan = SpaceUtils.getManager("waterloo");
+        tranMan = SpaceUtils.getManager("localhost");
         if (tranMan == null)
         {
             System.err.println("TransactionManager not found on LocalHost");
@@ -71,7 +77,7 @@ public class AccountLoginGUI extends JDialog implements RemoteEventListener
         }
 
         //Find JavaSpace
-        js = SpaceUtils.getSpace("waterloo");
+        js = SpaceUtils.getSpace("localhost");
         if (js == null)
         {
             System.err.println("JavaSpace not found on LocalHost");
@@ -81,33 +87,15 @@ public class AccountLoginGUI extends JDialog implements RemoteEventListener
         }
 
         setupGUI();
-
-        //Account login and creation methods
-        loginButton();
-        createButton();
-        cancelButton();
     }
 
 
     private void setupGUI()
     {
-        try
-        {
-            //Create Stub/Exporter
-            Exporter exporter = new BasicJeriExporter(TcpServerEndpoint.getInstance(0), new BasicILFactory(), false, true);
-            try
-            {
-                stub = (RemoteEventListener) exporter.export((Remote) this);
-                AccountItem accountTemplate = new AccountItem();
-                js.notify(accountTemplate, null, this.stub, Lease.FOREVER, null);
-            } catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-        } catch(Exception e)
-        {
-            e.printStackTrace();
-        }
+        //Account login and creation methods and if any more setups are required
+        loginButton();
+        createButton();
+        cancelButton();
     }
 
 
@@ -134,10 +122,10 @@ public class AccountLoginGUI extends JDialog implements RemoteEventListener
                             JOptionPane.showMessageDialog(null, "No account found or wrong details");
                         } else
                         {
-                            //ToDo: Send a boolean of true for usrLoggedIn if we are successful to ShowLotsGUI and usrID/name
-                            boolean loggedIn = true;
-                            int usrID = userAccount.accountNum;
+                            loggedIn = true;
                             String usrName = userAccount.accountName;
+                            JOptionPane.showMessageDialog(null, "Successfully logged in as " + usrName);
+                            dispose();
                         }
                     }
                 }catch (Exception e)
@@ -200,37 +188,35 @@ public class AccountLoginGUI extends JDialog implements RemoteEventListener
     {
         try
         {
-            //Create Transaction
-            Transaction.Created trc = null;
-            try
-            {
-                trc = TransactionFactory.create(tranMan, Lease.FOREVER);
-            }catch (Exception e)
-            {
-                System.err.println("Failed to create Transaction");
-            }
+            //Get the entered details
+            userNamePassEntered();
+            String username = txtfldUsername.getText();
+            String password = txtfldPassword.getText();
 
-            Transaction txn = trc.transaction;
-            AccountItem template = new AccountItem();
-            try
-            {
-                //Add a new user to the space
-                AccountQueue queue = (AccountQueue)js.take(template, txn, FIVE_SECONDS);
-                int counter = queue.counter;
-                String username = txtfldUsername.getText();
-                String password = txtfldPassword.getText();
+            //Check if AccountQueue object exists
+            AccountQueue accountTemplate = new AccountQueue();
+            AccountQueue accountStatus = (AccountQueue)js.take(accountTemplate, null, TWO_SECONDS);
 
-                AccountItem newUser = new AccountItem(counter, username, password);
-                js.write(newUser, txn, Lease.FOREVER);
-                queue.incrementCounter();
-                txn.commit();
-
-                System.out.print("Successfully Created User");
-            }catch (Exception e)
+            //If no AccountQueue found return else create and add account
+            if(accountStatus == null)
             {
-                txn.abort();
-                System.err.println("Failed to Create User");
-                System.err.println("Username " + txtfldUsername.getText() + " Password " + txtfldPassword.getText());
+                System.err.println("No AccountQueue Found");
+                dispose();
+            } else
+            {
+                try
+                {
+                    //Attempt to add a new user to the Space
+                    accountStatus.incrementCounter();
+                    int counter = accountStatus.counter;
+                    AccountItem newUser = new AccountItem(counter, username, password);
+                    js.write(newUser, null, Lease.FOREVER);
+
+                    System.out.println("Successfully created user");
+                }catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
             }
         }catch (Exception e)
         {
@@ -263,9 +249,4 @@ public class AccountLoginGUI extends JDialog implements RemoteEventListener
     }
 
 
-    @Override
-    public void notify(RemoteEvent remoteEvent) throws UnknownEventException, RemoteException
-    {
-        //ToDo: See if needed, otherwise remove RemoteEventListener. Might be handy to send the login event to main form?
-    }
 }

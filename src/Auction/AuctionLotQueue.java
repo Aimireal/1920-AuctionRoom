@@ -24,6 +24,6 @@ public class AuctionLotQueue implements Entry
 
     public void incrementCounter()
     {
-        counter++;
+        counter = counter + 1;
     }
 }
