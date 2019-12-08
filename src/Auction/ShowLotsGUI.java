@@ -29,6 +29,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
     private JButton btnView;
     private JButton btnSellLot;
     private JButton btnLogin;
+    private JButton btnRefresh;
 
     public AuctionItem lotsTemplate = new AuctionItem();
     public AuctionLotQueue queueTemplate = new AuctionLotQueue();
@@ -89,6 +90,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
         viewLotButton();
         sellButton();
         loginButton();
+        refreshButton();
     }
 
 
@@ -102,7 +104,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
             {
                 stub = (RemoteEventListener) exporter.export(this);
                 AuctionItem lotsTemplate = new AuctionItem();
-                js.notify((Entry) lotsTemplate, null, this.stub, Lease.FOREVER, null);
+                js.notify(lotsTemplate, null, this.stub, Lease.FOREVER, null);
             } catch (Exception e)
             {
                 System.err.println("Failed to setup Notify: " + e);
@@ -113,12 +115,6 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
             setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             getContentPane().setLayout(null);
             {
-                /*
-                //Removed due to scrollPane being in GUI designer instead now
-                scrPanLots = new JScrollPane();
-                getContentPane().add(scrpanLots);
-                scrPanLots.setBounds(12, 12, 900, 500);
-                */
                 {
                     ListModel lotModel = new DefaultComboBoxModel(new String[]{"No Lots Found"});
                     listLots = new JList();
@@ -259,6 +255,25 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
                     dialog.setVisible(true);
                     loggedIn = dialog.loggedIn;
                     loggedUsrName = dialog.loggedAs;
+                }
+            }
+        });
+    }
+
+
+    private void refreshButton()
+    {
+        btnRefresh.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                try
+                {
+                    viewLots();
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
                 }
             }
         });
