@@ -15,7 +15,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
 
-public class SellGUI extends JDialog implements RemoteEventListener
+public class SellGUI extends JDialog
 {
     private JPanel panelSellLots;
     private JTextField txtFldTitle;
@@ -34,25 +34,26 @@ public class SellGUI extends JDialog implements RemoteEventListener
     private String lotDesc;
     private String lotPrice;
     private String lotBuyNowPrice;
-    private String lotSeller;
+    public static String lotSeller;
     private String durString;
 
     private static int TWO_SECONDS = 2000;
     private static int FIVE_SECONDS = 5000;
 
 
-    public static JDialog main()
+    public static JDialog main(String loggedInUsr)
     {
         SwingUtilities.invokeLater(() ->
         {
-            JDialog dialog = new SellGUI("AuctionRoom");
+            JDialog dialog = new SellGUI();
             dialog.setVisible(true);
         });
+        lotSeller = loggedInUsr;
         return null;
     }
 
 
-    private SellGUI(String title)
+    private SellGUI()
     {
         super();
 
@@ -219,7 +220,6 @@ public class SellGUI extends JDialog implements RemoteEventListener
                                     lotDesc = description;
                                     lotPrice = price;
                                     lotBuyNowPrice = buyNowPrice;
-                                    lotSeller = "PLACEHOLDER"; //ToDo: Sort out passing LoggedIn to class
                                     return true;
                                 }
                             }
@@ -230,9 +230,5 @@ public class SellGUI extends JDialog implements RemoteEventListener
         }
     }
 
-    @Override
-    public void notify(RemoteEvent remoteEvent) throws UnknownEventException, RemoteException
-    {
-        //ToDo: See if needed, otherwise remove RemoteEventListener. Other than something on main to refresh if possible/needed.
-    }
+
 }

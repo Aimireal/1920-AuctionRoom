@@ -15,7 +15,6 @@ public class AccountQueue implements Entry
         //No args constructor
     }
 
-
     public AccountQueue(int i)
     {
         counter = i;
@@ -25,4 +24,5 @@ public class AccountQueue implements Entry
     {
         counter++;
     }
+
 }

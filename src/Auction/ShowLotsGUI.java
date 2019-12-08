@@ -38,8 +38,8 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
     private RemoteEventListener stub;
 
     private boolean loggedIn = false; //This can be used to check whether someone is logged in
-    private String loggedUsrID; //Store the user ID that is logged in for purchases perhaps
-    private String loggedUsrName; //Might add into UI to show who is logged in but idk
+    private String loggedUsrName; //Might add into UI to show who is logged in
+    private String currentLotInfo; //String to store the currently selected lot information
 
     private static int TWENTYFIVE_MILLS = 250;
     private static int FIVE_SECONDS = 5000;
@@ -136,8 +136,8 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
                 {
                     if(!listSelectionEvent.getValueIsAdjusting())
                     {
+                        currentLotInfo = listLots.getSelectedValue().toString();
                         System.out.println("Selected " + listLots.getSelectedValue().toString());
-                        //ToDo: Write the lot information to a String to be parsed by Buy
                     }
                 }
             });
@@ -215,7 +215,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
             @Override
             public void actionPerformed(ActionEvent actionEvent)
             {
-                JDialog dialog = PurchaseGUI.main();
+                JDialog dialog = PurchaseGUI.main(0, loggedUsrName);
             }
         });
     }
@@ -233,8 +233,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
                     JOptionPane.showMessageDialog(null, "You must be logged in to do this");
                 } else
                 {
-                    //ToDo: Pass in LoggedIn String similar to how we did login
-                    JDialog dialog = SellGUI.main();
+                    JDialog dialog = SellGUI.main(loggedUsrName);
                 }
             }
         });
@@ -251,13 +250,12 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
                 if(loggedIn)
                 {
                     JOptionPane.showMessageDialog(null, "You are already logged in, would you like to log out?");
-                    loggedUsrID = "";
                     loggedUsrName = "";
                     loggedIn = false;
                 } else
                 {
                     //Run the AccountLoginGUI class and return the loggedIn boolean from there using Modality
-                    AccountLoginGUI dialog = new AccountLoginGUI("AuctionRoom");
+                    AccountLoginGUI dialog = new AccountLoginGUI("AuctionRoom", loggedUsrName);
                     dialog.setVisible(true);
                     loggedIn = dialog.loggedIn;
                     loggedUsrName = dialog.loggedAs;

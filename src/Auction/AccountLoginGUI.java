@@ -1,24 +1,14 @@
 package Auction;
 
-import net.jini.core.event.RemoteEvent;
 import net.jini.core.event.RemoteEventListener;
-import net.jini.core.event.UnknownEventException;
 import net.jini.core.lease.Lease;
-import net.jini.core.transaction.Transaction;
-import net.jini.core.transaction.TransactionFactory;
 import net.jini.core.transaction.server.TransactionManager;
-import net.jini.export.Exporter;
-import net.jini.jeri.BasicILFactory;
-import net.jini.jeri.BasicJeriExporter;
-import net.jini.jeri.tcp.TcpServerEndpoint;
 import net.jini.space.JavaSpace;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.rmi.Remote;
-import java.rmi.RemoteException;
 
 public class AccountLoginGUI extends JDialog
 {
@@ -47,14 +37,14 @@ public class AccountLoginGUI extends JDialog
     {
         SwingUtilities.invokeLater(() ->
         {
-            JDialog dialog = new AccountLoginGUI("AuctionRoom");
+            JDialog dialog = new AccountLoginGUI("AuctionRoom", "AuctionRoom");
             dialog.setVisible(true);
         });
         return null;
     }
 
 
-    public AccountLoginGUI(String title)
+    public AccountLoginGUI(String auctionRoom, String title)
     {
         //super();
         super((Frame) null, true);

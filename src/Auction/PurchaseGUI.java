@@ -36,10 +36,10 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
 
     private AuctionItem auctionLot;
 
-    public int curLotNum = 0; //This might not be needed, or we can use this to pull details instead of passing on launch
-    public String loggedUser = "PLACEHOLDER"; //Currently logged in user
-    public String curLotTitle = "TITLE";
-    public String curLotDesc = "DESC";
+    public static int curLotNum = 0; //This might not be needed, or we can use this to pull details instead of passing on launch
+    public static String curUser = "PLACEHOLDER"; //Currently logged in user
+    public static String curLotTitle = "TITLE";
+    public static String curLotDesc = "DESC";
     public String curLotBidPrice = "0";
     public String curLotBuyPrice = "0";
 
@@ -47,18 +47,22 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
     private static int FIVE_SECONDS = 5000;
 
 
-    public static JDialog main()
+    public static JDialog main(int lotID, String loggedUser)
     {
         SwingUtilities.invokeLater(() ->
         {
-            JDialog dialog = new PurchaseGUI("AuctionRoom");
+            JDialog dialog = new PurchaseGUI();
             dialog.setVisible(true);
         });
+
+        //Pull through the lot information
+        curLotNum = lotID;
+        curUser = loggedUser;
         return null;
     }
 
 
-    public PurchaseGUI(String title)
+    public PurchaseGUI()
     {
         super();
 
@@ -245,13 +249,13 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
     public void notify(RemoteEvent remoteEvent) throws UnknownEventException, RemoteException
     {
         AuctionItem template = new AuctionItem();
-        template.lotHighestBidder = loggedUser; //ToDo: Pull through the current user ID
+        template.lotHighestBidder = curUser; //ToDo: Pull through the current user ID
         template.lotExpired = true;
 
         try
         {
             AuctionItem notifyLot = (AuctionItem)js.readIfExists(template, null, FIVE_SECONDS);
-            JOptionPane.showMessageDialog(null, "Well done " + loggedUser + " you won the auction for £" +
+            JOptionPane.showMessageDialog(null, "Well done " + curUser + " you won the auction for £" +
                     curLotBidPrice + ", please pay for the item as soon as possible");
         }catch (Exception e)
         {
