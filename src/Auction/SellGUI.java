@@ -131,10 +131,11 @@ public class SellGUI extends JDialog
                         auctionStatus.incrementCounter();
                         int counter = auctionStatus.counter;
                         AuctionItem newLot = new AuctionItem(counter, lotTitle, lotDesc, lotPrice, lotBuyNowPrice, lotSeller, 12345);
-                        //ToDO: Fix this
+                        //ToDo: Fix this so it uses specified duration
                         js.write(newLot, null, Lease.FOREVER);
 
                         System.out.println("Successfully added lot");
+                        dispose();
                     }catch (Exception e)
                     {
                         System.err.println("Failed to add lot");

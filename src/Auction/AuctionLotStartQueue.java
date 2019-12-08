@@ -37,6 +37,5 @@ public class AuctionLotStartQueue
         {
             System.err.println("Error. Unable to create AuctionLotQueue or write to space");
         }
-
     }
 }
