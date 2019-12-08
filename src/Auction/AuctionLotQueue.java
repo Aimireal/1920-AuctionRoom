@@ -15,12 +15,10 @@ public class AuctionLotQueue implements Entry
         //No args constructor
     }
 
-
     public AuctionLotQueue(int i)
     {
         counter = i;
     }
-
 
     public void incrementCounter()
     {

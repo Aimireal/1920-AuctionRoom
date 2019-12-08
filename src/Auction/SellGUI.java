@@ -130,7 +130,8 @@ public class SellGUI extends JDialog
                         //Attempt to add new lot to space
                         auctionStatus.incrementCounter();
                         int counter = auctionStatus.counter;
-                        AuctionItem newLot = new AuctionItem(counter, lotTitle, lotDesc, lotPrice, lotBuyNowPrice, lotSeller, Long.parseLong(durString));
+                        AuctionItem newLot = new AuctionItem(counter, lotTitle, lotDesc, lotPrice, lotBuyNowPrice, lotSeller, 12345);
+                        //ToDO: Fix this
                         js.write(newLot, null, Lease.FOREVER);
 
                         System.out.println("Successfully added lot");

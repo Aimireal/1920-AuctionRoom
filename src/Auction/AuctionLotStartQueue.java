@@ -20,6 +20,16 @@ public class AuctionLotStartQueue
 
         try
         {
+            AccountQueue accQueue = new AccountQueue(0);
+            js.write(accQueue, null, Lease.FOREVER);
+            System.out.println("AccountQueue made and written to space");
+        } catch(Exception e)
+        {
+            System.err.println("Error. Unable to create AccountQueue or write to space");
+        }
+
+        try
+        {
             AuctionLotQueue queue = new AuctionLotQueue(0);
             js.write(queue, null, Lease.FOREVER);
             System.out.println("AuctionLotQueue made and written to space");
@@ -28,14 +38,5 @@ public class AuctionLotStartQueue
             System.err.println("Error. Unable to create AuctionLotQueue or write to space");
         }
 
-        try
-        {
-            AccountQueue accQueue = new AccountQueue(0);
-            js.write(accQueue, null, Lease.FOREVER);
-            System.out.println("AccountQueue made and written to space");
-        } catch(Exception e)
-        {
-            System.err.println("Error. Unable to create AccountQueue or write to space");
-        }
     }
 }
