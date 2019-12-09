@@ -18,6 +18,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
 
+
 public class PurchaseGUI extends JDialog implements RemoteEventListener
 {
     private JPanel panelBuyLots;
@@ -168,7 +169,7 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
                         try
                         {
                             js.take(auctionLot, txn, FIVE_HUNDRED_MILLS);
-                            auctionLot.lotHighestBidder = "PLACEHOLDER";
+                            auctionLot.lotHighestBidder = curUser;
                             auctionLot.lotBids++;
                             auctionLot.lotPrice = String.valueOf(userBid);
 
@@ -221,8 +222,31 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
                 Transaction txn = trc.transaction;
                 try
                 {
-                    //ToDo: Close the lot and notify user it has been purchased for X amount
-                    //We can go about this by setting the bid price to buy now and the expired boolean to true
+                    auctionLot = (AuctionItem)js.readIfExists(auctionLot, txn, FIVE_HUNDRED_MILLS);
+                    double userBid = Double.parseDouble(txtFldBid.getText());
+                    double lotPrice = Double.parseDouble(auctionLot.lotPrice);
+
+                    if(lotPrice < userBid)
+                    {
+                        try
+                        {
+                            js.take(auctionLot, txn, FIVE_HUNDRED_MILLS);
+                            auctionLot.lotHighestBidder = curUser;
+                            auctionLot.lotBids++;
+                            auctionLot.lotPrice = String.valueOf(userBid);
+
+                            js.write(auctionLot, txn, Lease.FOREVER);
+                            JOptionPane.showMessageDialog(null, "You are the highest bidder");
+                            txn.commit();
+                        }catch (NumberFormatException e)
+                        {
+                            JOptionPane.showMessageDialog(null, "Something went wrong, check bids value is right and try again");
+                        }
+                    } else
+                    {
+                        JOptionPane.showMessageDialog(null, "Bid too low, please increase bid value");
+                        txn.abort();
+                    }
                 }catch (Exception e)
                 {
                     e.printStackTrace();
@@ -249,7 +273,7 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
     public void notify(RemoteEvent remoteEvent) throws UnknownEventException, RemoteException
     {
         AuctionItem template = new AuctionItem();
-        template.lotHighestBidder = curUser; //ToDo: Pull through the current user ID
+        template.lotHighestBidder = curUser;
         template.lotExpired = true;
 
         try

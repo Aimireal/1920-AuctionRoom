@@ -30,7 +30,7 @@ public class AuctionItem implements Entry
     }
 
 
-    public AuctionItem(int counter, String title, String description, String price, String buyNowPrice, String seller, long duration)
+    public AuctionItem(int counter, String title, String description, String price, String buyNowPrice, String seller)
     {
         lotNum = counter;
         lotTitle = title;
@@ -39,11 +39,11 @@ public class AuctionItem implements Entry
         lotBuyNowPrice = buyNowPrice;
 
         lotSellerID = seller;
-        lotDuration = duration;
+        //lotDuration = duration;
         lotHighestBidder = "";
 
         lotCreationTime = System.currentTimeMillis();
-        lotEndTime = lotCreationTime + timeToMills(lotDuration);
+        //lotEndTime = lotCreationTime + timeToMills(lotDuration);
         lotExpired = false;
     }
 

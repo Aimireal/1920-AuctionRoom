@@ -1,19 +1,14 @@
 package Auction;
 
-import net.jini.core.event.RemoteEvent;
 import net.jini.core.event.RemoteEventListener;
-import net.jini.core.event.UnknownEventException;
 import net.jini.core.lease.Lease;
-import net.jini.core.transaction.Transaction;
-import net.jini.core.transaction.TransactionFactory;
 import net.jini.core.transaction.server.TransactionManager;
 import net.jini.space.JavaSpace;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.rmi.RemoteException;
+
 
 public class SellGUI extends JDialog
 {
@@ -24,7 +19,6 @@ public class SellGUI extends JDialog
     private JTextField txtFldBuyNow;
     private JButton btnCancel;
     private JButton btnSubmitSale;
-    private JTextField txtFldDuration;
 
     private JavaSpace js;
     private TransactionManager tranMan;
@@ -35,7 +29,6 @@ public class SellGUI extends JDialog
     private String lotPrice;
     private String lotBuyNowPrice;
     public static String lotSeller;
-    private String durString;
 
     private static int TWO_SECONDS = 2000;
     private static int FIVE_SECONDS = 5000;
@@ -116,7 +109,7 @@ public class SellGUI extends JDialog
             {
                 //Check if AuctionLotQueue object exists
                 AuctionLotQueue auctionTemplate = new AuctionLotQueue();
-                AuctionLotQueue auctionStatus = (AuctionLotQueue)js.take(auctionTemplate, null, TWO_SECONDS);
+                AuctionLotQueue auctionStatus = (AuctionLotQueue)js.read(auctionTemplate, null, TWO_SECONDS);
 
                 //If no AuctionLotQueue found return else add lot for sale
                 if(auctionStatus == null)
@@ -130,8 +123,7 @@ public class SellGUI extends JDialog
                         //Attempt to add new lot to space
                         auctionStatus.incrementCounter();
                         int counter = auctionStatus.counter;
-                        AuctionItem newLot = new AuctionItem(counter, lotTitle, lotDesc, lotPrice, lotBuyNowPrice, lotSeller, 12345);
-                        //ToDo: Fix this so it uses specified duration
+                        AuctionItem newLot = new AuctionItem(counter, lotTitle, lotDesc, lotPrice, lotBuyNowPrice, lotSeller);
                         js.write(newLot, null, Lease.FOREVER);
 
                         System.out.println("Successfully added lot");
@@ -173,7 +165,6 @@ public class SellGUI extends JDialog
         String description = txtFldDesc.getText();
         String price = txtFldStartBid.getText();
         String buyNowPrice = txtFldBuyNow.getText();
-        String durString = txtFldDuration.getText();
 
         if(title == null || title.isEmpty())
         {
@@ -205,25 +196,13 @@ public class SellGUI extends JDialog
                             return false;
                         } else
                         {
-                            if(durString == null || durString.isEmpty())
                             {
-                                System.err.println("You to give a duration");
-                                return false;
-                            } else
-                            {
-                                if(Long.parseLong(durString) < 0)
-                                {
-                                    System.err.println("You must give a positive duration");
-                                    return false;
-                                } else
-                                {
-                                    //Values verified
-                                    lotTitle = title;
-                                    lotDesc = description;
-                                    lotPrice = price;
-                                    lotBuyNowPrice = buyNowPrice;
-                                    return true;
-                                }
+                                //Values verified
+                                lotTitle = title;
+                                lotDesc = description;
+                                lotPrice = price;
+                                lotBuyNowPrice = buyNowPrice;
+                                return true;
                             }
                         }
                     }

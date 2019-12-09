@@ -186,13 +186,7 @@ public class AccountLoginGUI extends JDialog
 
             //Check if AccountQueue object exists
             AuctionLotQueue accountTemplate = new AuctionLotQueue();
-            AuctionLotQueue accountStatus = (AuctionLotQueue)js.take(accountTemplate, null, TWO_SECONDS);
-
-            /*
-            //ToDo: Remove all AccountQueue and merge into AuctionLotQueue
-            AccountQueue accountTemplate = new AccountQueue();
-            AccountQueue accountStatus = (AccountQueue)js.take(accountTemplate, null, TWO_SECONDS);
-             */
+            AuctionLotQueue accountStatus = (AuctionLotQueue)js.read(accountTemplate, null, TWO_SECONDS);
 
             //If no AccountQueue found return else create and add account
             if(accountStatus == null)

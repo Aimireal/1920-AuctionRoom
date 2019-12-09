@@ -18,6 +18,7 @@ public class AuctionLotStartQueue
             System.exit(1);
         }
 
+        /*
         try
         {
             AccountQueue accQueue = new AccountQueue(0);
@@ -27,6 +28,7 @@ public class AuctionLotStartQueue
         {
             System.err.println("Error. Unable to create AccountQueue or write to space");
         }
+         */
 
         try
         {

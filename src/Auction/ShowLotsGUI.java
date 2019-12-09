@@ -1,6 +1,5 @@
 package Auction;
 
-import net.jini.core.entry.Entry;
 import net.jini.core.event.RemoteEvent;
 import net.jini.core.event.RemoteEventListener;
 import net.jini.core.event.UnknownEventException;
@@ -25,7 +24,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
 {
     private JPanel panelShowLots;
     private JScrollPane scrPanLots;
-    private JList listLots;
+    private JList<String> listLots;
     private JButton btnView;
     private JButton btnSellLot;
     private JButton btnLogin;
@@ -110,9 +109,11 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
                 System.err.println("Failed to setup Notify: " + e);
             }
 
-            //Setting up lots display stuff
+            //Setting up lot display
             listLots.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
+            /*
             getContentPane().setLayout(null);
             {
                 {
@@ -123,6 +124,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
                     listLots.setBounds(89, -31, 300, 400);
                 }
             }
+             */
 
             //List Selection
             listLots.addListSelectionListener(new ListSelectionListener()
@@ -146,7 +148,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
 
     public void viewLots() throws CannotAbortException, RemoteException, UnknownTransactionException
     {
-        //Create Transaction object
+        //Create Transaction
         Transaction.Created trc = null;
         try
         {
@@ -157,8 +159,8 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
         }
         Transaction txn = trc.transaction;
 
-        //Add lots to the list in the GUI
-        DefaultListModel lotModel = new DefaultListModel();
+        //Add lots to DefaultListModel
+        DefaultListModel<String> lotModel = new DefaultListModel<>();
         try
         {
             AuctionLotQueue queue = (AuctionLotQueue) js.read(queueTemplate, txn, TWENTYFIVE_MILLS);
@@ -167,15 +169,12 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
                 lotsTemplate.lotNum = i;
                 AuctionItem currentLot = (AuctionItem) js.readIfExists(lotsTemplate, txn, TWENTYFIVE_MILLS);
 
-                if (currentLot == null)
+                if (currentLot != null)
                 {
-                    System.err.println("No lot found");
-                } else
-                {
-                    if (currentLot.lotExpired)
+                    if(currentLot.lotExpired)
                     {
-                        System.err.println(currentLot.lotTitle + " has expired.");
-                        lotModel.addElement("[Expired] " + currentLot.lotTitle);
+                        System.err.println("Lot " + currentLot.lotTitle + " has expired");
+                        lotModel.addElement("Expired - " + currentLot.lotTitle);
                     } else
                     {
                         System.out.println(currentLot.lotTitle + " added to JList");
@@ -188,19 +187,23 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
                                         " | Buy it Now Price: £" + currentLot.lotBuyNowPrice;
                         lotModel.addElement(addLotList);
                     }
+                } else
+                {
+                    System.err.println("CurrentLot Null");
                 }
             }
             txn.commit();
         } catch (Exception e)
         {
-            System.err.println("Could not read Queue " + e);
+            System.err.println("Could not read Queue");
             txn.abort();
         }
         if (lotModel.getSize() == 0)
         {
-            lotModel.add(0, "No Lots Returned. Sell something or wait");
-            System.err.println("No lots returned. Make sure at least one exists");
+            lotModel.addElement("No Lots Returned. Sell something or wait");
+            System.err.println("No lots found or returned");
         }
+        listLots.setModel(lotModel);
     }
 
 
@@ -291,5 +294,6 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
             e.printStackTrace();
         }
     }
+
 
 }
