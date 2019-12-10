@@ -1,5 +1,6 @@
 package Auction;
 
+import net.jini.core.entry.Entry;
 import net.jini.core.event.RemoteEvent;
 import net.jini.core.event.RemoteEventListener;
 import net.jini.core.event.UnknownEventException;
@@ -11,6 +12,7 @@ import net.jini.jeri.BasicILFactory;
 import net.jini.jeri.BasicJeriExporter;
 import net.jini.jeri.tcp.TcpServerEndpoint;
 import net.jini.space.JavaSpace;
+import net.jini.space.MatchSet;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -18,6 +20,8 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 
 public class ShowLotsGUI extends JFrame implements RemoteEventListener
@@ -42,6 +46,8 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
     private String currentLotInfo; //String to store the currently selected lot information
 
     private static int TWENTYFIVE_MILLS = 250;
+    private static int ONE_SECOND = 1000;
+    private static int THREE_SECONDS = 3000;
     private static int FIVE_SECONDS = 5000;
 
 
@@ -134,8 +140,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
                 {
                     if(!listSelectionEvent.getValueIsAdjusting())
                     {
-                        currentLotInfo = listLots.getSelectedValue().toString();
-                        System.out.println("Selected " + listLots.getSelectedValue().toString());
+                        currentLotInfo = listLots.getSelectedValue();
                     }
                 }
             });
@@ -143,67 +148,60 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
         {
             e.printStackTrace();
         }
+        viewLots();
     }
 
 
-    public void viewLots() throws CannotAbortException, RemoteException, UnknownTransactionException
+    public void viewLots()
     {
         //Create Transaction
-        Transaction.Created trc = null;
         try
         {
-            trc = TransactionFactory.create(tranMan, FIVE_SECONDS);
-        } catch (Exception e)
-        {
-            System.err.println("Failed to create Transaction");
-        }
-        Transaction txn = trc.transaction;
-
-        //Add lots to DefaultListModel
-        DefaultListModel<String> lotModel = new DefaultListModel<>();
-        try
-        {
-            AuctionLotQueue queue = (AuctionLotQueue) js.read(queueTemplate, txn, TWENTYFIVE_MILLS);
-            for (int i = 0; i < queue.counter; i++)
+            Transaction.Created trc = null;
+            try
             {
-                lotsTemplate.lotNum = i;
-                AuctionItem currentLot = (AuctionItem) js.readIfExists(lotsTemplate, txn, TWENTYFIVE_MILLS);
+                trc = TransactionFactory.create(tranMan, THREE_SECONDS);
+            }catch (Exception e)
+            {
+                System.out.print("Failed to create Transaction");
+            }
+            Transaction txn = trc.transaction;
 
-                if (currentLot != null)
+            //Adding items to JList
+            DefaultListModel<String> listModel = new DefaultListModel<>();
+            try
+            {
+                boolean searching = true;
+                while(searching)
                 {
-                    if(currentLot.lotExpired)
+                    System.out.println("In While Searching"); //TEST
+                    AuctionItem item = (AuctionItem)js.takeIfExists(lotsTemplate, txn, ONE_SECOND);
+                    if(item != null)
                     {
-                        System.err.println("Lot " + currentLot.lotTitle + " has expired");
-                        lotModel.addElement("Expired - " + currentLot.lotTitle);
+                        System.out.println("Found something: " + item.lotTitle); //TEST
+                        String lotInformation = item.lotTitle +
+                                " | Description: " + item.lotDesc +
+                                " | Seller: " + item.lotSellerID +
+                                " | Current Bid: £" + item.lotPrice +
+                                " | Highest Bidder: " + item.lotHighestBidder +
+                                " | Buy Now Price: £" + item.lotBuyNowPrice;
+                        listModel.addElement(lotInformation);
+                        listLots.setModel(listModel);
                     } else
                     {
-                        System.out.println(currentLot.lotTitle + " added to JList");
-                        String addLotList =
-                                "Lot Title: " + currentLot.lotTitle +
-                                        "Lot Description: " + currentLot.lotDesc +
-                                        " | Lot Seller: " + currentLot.lotSellerID +
-                                        " | Current Bid: £" + currentLot.lotPrice +
-                                        " | Highest Bidder: " + currentLot.lotHighestBidder +
-                                        " | Buy it Now Price: £" + currentLot.lotBuyNowPrice;
-                        lotModel.addElement(addLotList);
+                        System.out.println("Searching Finished"); //TEST
+                        searching = false;
                     }
-                } else
-                {
-                    System.err.println("CurrentLot Null");
                 }
+            }catch (Exception e)
+            {
+                System.err.println("Unable to add items");
+                txn.abort();
             }
-            txn.commit();
-        } catch (Exception e)
+        }catch (Exception e)
         {
-            System.err.println("Could not read Queue");
-            txn.abort();
+            System.err.println("Transaction setup Failed " + e);
         }
-        if (lotModel.getSize() == 0)
-        {
-            lotModel.addElement("No Lots Returned. Sell something or wait");
-            System.err.println("No lots found or returned");
-        }
-        listLots.setModel(lotModel);
     }
 
 
@@ -214,7 +212,14 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
             @Override
             public void actionPerformed(ActionEvent actionEvent)
             {
-                JDialog dialog = PurchaseGUI.main(0, loggedUsrName);
+                if(!loggedIn)
+                {
+                    JOptionPane.showMessageDialog(null, "You are not logged in, please log in first");
+                } else
+                {
+                    //Run the SellGUI class passing in our selected item details and logged in username
+                    JDialog dialog = PurchaseGUI.main(currentLotInfo, loggedUsrName);
+                }
             }
         });
     }
@@ -229,7 +234,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
             {
                 if (!loggedIn)
                 {
-                    JOptionPane.showMessageDialog(null, "You must be logged in to do this");
+                    JOptionPane.showMessageDialog(null, "You are not logged in, please log in first");
                 } else
                 {
                     JDialog dialog = SellGUI.main(loggedUsrName);
@@ -289,9 +294,9 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
         try
         {
             viewLots();
-        } catch (CannotAbortException | UnknownTransactionException e)
+        } catch (Exception e)
         {
-            e.printStackTrace();
+            System.err.println("Notify Failed " + e);
         }
     }
 

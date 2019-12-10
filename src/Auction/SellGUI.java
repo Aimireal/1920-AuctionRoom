@@ -2,6 +2,8 @@ package Auction;
 
 import net.jini.core.event.RemoteEventListener;
 import net.jini.core.lease.Lease;
+import net.jini.core.transaction.Transaction;
+import net.jini.core.transaction.TransactionFactory;
 import net.jini.core.transaction.server.TransactionManager;
 import net.jini.space.JavaSpace;
 
@@ -29,9 +31,12 @@ public class SellGUI extends JDialog
     private String lotPrice;
     private String lotBuyNowPrice;
     public static String lotSeller;
+    public int lotCounter = 0; //Calculated on all lots, then updated on listing
 
+    public AuctionItem lotsTemplate = new AuctionItem();
+
+    private static int ONE_SECOND = 1000;
     private static int TWO_SECONDS = 2000;
-    private static int FIVE_SECONDS = 5000;
 
 
     public static JDialog main(String loggedInUsr)
@@ -120,10 +125,9 @@ public class SellGUI extends JDialog
                 {
                     try
                     {
-                        //Attempt to add new lot to space
-                        auctionStatus.incrementCounter();
-                        int counter = auctionStatus.counter;
-                        AuctionItem newLot = new AuctionItem(counter, lotTitle, lotDesc, lotPrice, lotBuyNowPrice, lotSeller);
+                        counterAmount();
+
+                        AuctionItem newLot = new AuctionItem(lotCounter, lotTitle, lotDesc, lotPrice, lotBuyNowPrice, lotSeller);
                         js.write(newLot, null, Lease.FOREVER);
 
                         System.out.println("Successfully added lot");
@@ -141,6 +145,43 @@ public class SellGUI extends JDialog
         }catch (Exception e)
         {
             e.printStackTrace();
+        }
+    }
+
+
+    private void counterAmount()
+    {
+        //Count all the items returned in the space to decide what to number next due to AuctionItem counter not working
+        try
+        {
+            Transaction.Created trc = null;
+            try
+            {
+                trc = TransactionFactory.create(tranMan, TWO_SECONDS);
+            }catch (Exception e)
+            {
+                System.out.print("Failed to create Transaction");
+            }
+            Transaction txn = trc.transaction;
+
+            boolean searching = true;
+            while(searching)
+            {
+                System.out.println("In While Searching"); //TEST
+                AuctionItem item = (AuctionItem)js.takeIfExists(lotsTemplate, txn, ONE_SECOND);
+                if(item != null)
+                {
+                    lotCounter++;
+                } else
+                {
+                    System.out.println("Searching Finished, Counter: " + lotCounter); //TEST
+                    searching = false;
+                }
+            }
+            txn.abort();
+        }catch (Exception e)
+        {
+            System.err.println("Unable to Search");
         }
     }
 

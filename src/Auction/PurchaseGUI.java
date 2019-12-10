@@ -44,11 +44,13 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
     public String curLotBidPrice = "0";
     public String curLotBuyPrice = "0";
 
+    public static String currentLotInfo = "PLACEHOLDER";
+
     private static int FIVE_HUNDRED_MILLS = 500;
     private static int FIVE_SECONDS = 5000;
 
 
-    public static JDialog main(int lotID, String loggedUser)
+    public static JDialog main(String lotInfo, String loggedUser)
     {
         SwingUtilities.invokeLater(() ->
         {
@@ -57,7 +59,9 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
         });
 
         //Pull through the lot information
-        curLotNum = lotID;
+        currentLotInfo = lotInfo;
+        System.err.println(currentLotInfo);
+
         curUser = loggedUser;
         return null;
     }
@@ -223,28 +227,28 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
                 try
                 {
                     auctionLot = (AuctionItem)js.readIfExists(auctionLot, txn, FIVE_HUNDRED_MILLS);
-                    double userBid = Double.parseDouble(txtFldBid.getText());
+                    double buyNowPrice = Double.parseDouble(txtFldBuyNowPrice.getText());
                     double lotPrice = Double.parseDouble(auctionLot.lotPrice);
 
-                    if(lotPrice < userBid)
+                    if(lotPrice <= buyNowPrice)
                     {
                         try
                         {
                             js.take(auctionLot, txn, FIVE_HUNDRED_MILLS);
                             auctionLot.lotHighestBidder = curUser;
-                            auctionLot.lotBids++;
-                            auctionLot.lotPrice = String.valueOf(userBid);
+                            auctionLot.lotPrice = String.valueOf(buyNowPrice);
+                            auctionLot.lotExpired = true;
 
                             js.write(auctionLot, txn, Lease.FOREVER);
-                            JOptionPane.showMessageDialog(null, "You are the highest bidder");
+                            JOptionPane.showMessageDialog(null, "You have purchased this lot. Please pay as soon as possible");
                             txn.commit();
                         }catch (NumberFormatException e)
                         {
-                            JOptionPane.showMessageDialog(null, "Something went wrong, check bids value is right and try again");
+                            JOptionPane.showMessageDialog(null, "Something went wrong. Please try again");
                         }
                     } else
                     {
-                        JOptionPane.showMessageDialog(null, "Bid too low, please increase bid value");
+                        JOptionPane.showMessageDialog(null, "Buy now too low. This shouldn't happen");
                         txn.abort();
                     }
                 }catch (Exception e)
