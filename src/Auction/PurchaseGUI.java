@@ -262,7 +262,10 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
                 Transaction txn = trc.transaction;
                 try
                 {
-                    auctionLot = (AuctionItem)js.readIfExists(auctionLot, txn, FIVE_HUNDRED_MILLS);
+                    AuctionItem template = new AuctionItem();
+                    template.lotNum = currentLotIndex;
+
+                    auctionLot = (AuctionItem)js.readIfExists(template, txn, FIVE_HUNDRED_MILLS);
                     double buyNowPrice = Double.parseDouble(txtFldBuyNowPrice.getText());
                     double lotPrice = Double.parseDouble(auctionLot.lotPrice);
 
