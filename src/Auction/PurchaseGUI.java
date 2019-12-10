@@ -36,6 +36,7 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
     private RemoteEventListener stub;
 
     private AuctionItem auctionLot;
+    public AuctionItem lotsTemplate = new AuctionItem();
 
     public static int curLotNum = 0; //This might not be needed, or we can use this to pull details instead of passing on launch
     public static String curUser = "PLACEHOLDER"; //Currently logged in user
@@ -44,13 +45,15 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
     public String curLotBidPrice = "0";
     public String curLotBuyPrice = "0";
 
+    public static int currentLotIndex;
     public static String currentLotInfo = "PLACEHOLDER";
 
     private static int FIVE_HUNDRED_MILLS = 500;
+    private static int TWO_SECONDS = 2000;
     private static int FIVE_SECONDS = 5000;
 
 
-    public static JDialog main(String lotInfo, String loggedUser)
+    public static JDialog main(int lotIndex, String lotInfo, String loggedUser)
     {
         SwingUtilities.invokeLater(() ->
         {
@@ -59,8 +62,9 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
         });
 
         //Pull through the lot information
+        currentLotIndex = lotIndex;
         currentLotInfo = lotInfo;
-        System.err.println(currentLotInfo);
+        System.err.println(currentLotIndex);
 
         curUser = loggedUser;
         return null;
@@ -96,9 +100,8 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
             System.out.println("JavaSpace found");
         }
 
-        //ToDo: On the currently selected lot from ShowLotsGUI, pull data here
-
         setupGUI();
+        pullInformation();
 
         //Setup buttons and functions
         bidButton();
@@ -126,13 +129,43 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
         {
             e.printStackTrace();
         }
+    }
 
-        //Insert details for the selected lot into GUI
-        //ToDo: Adding checks for values before this is an idea, but has been checked when we placed into space
-        lblLotTitle.setText(curLotTitle);
-        lblLotDesc.setText(curLotDesc);
-        lblCurrentBid.setText(curLotBidPrice);
-        txtFldBuyNowPrice.setText("£" + curLotBuyPrice);
+    public void pullInformation()
+    {
+        try
+        {
+            Transaction.Created trc = null;
+            try
+            {
+                trc = TransactionFactory.create(tranMan, TWO_SECONDS);
+            }catch (Exception e)
+            {
+                System.out.print("Failed to create Transaction");
+            }
+            Transaction txn = trc.transaction;
+
+            lotsTemplate.lotNum = currentLotIndex;
+            AuctionItem item = (AuctionItem)js.takeIfExists(lotsTemplate, txn, TWO_SECONDS);
+
+            //Set local info
+            curLotNum = currentLotIndex;
+            curLotTitle = item.lotTitle;
+            curLotDesc = item.lotDesc;
+            curLotBidPrice = item.lotPrice;
+            curLotBuyPrice = item.lotBuyNowPrice;
+
+            //Set GUI info
+            lblLotTitle.setText(curLotTitle);
+            lblLotDesc.setText(curLotDesc);
+            lblCurrentBid.setText("£" + curLotBidPrice);
+            txtFldBuyNowPrice.setText("£" + curLotBuyPrice);
+
+            txn.abort();
+        }catch (Exception e)
+        {
+            System.err.println("Unable to Search");
+        }
     }
 
 
@@ -160,11 +193,14 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
                     System.exit(1);
                 }
 
-                //Place a bid
+                //Place a bid based on the index on the current lot number
                 Transaction txn = trc.transaction;
                 try
                 {
-                    auctionLot = (AuctionItem)js.readIfExists(auctionLot, txn, FIVE_HUNDRED_MILLS);
+                    AuctionItem template = new AuctionItem();
+                    template.lotNum = currentLotIndex;
+
+                    auctionLot = (AuctionItem)js.readIfExists(template, txn, FIVE_HUNDRED_MILLS);
                     double userBid = Double.parseDouble(txtFldBid.getText());
                     double lotPrice = Double.parseDouble(auctionLot.lotPrice);
 
@@ -219,7 +255,7 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
                 if(txtFldBuyNowPrice.getText()== null || txtFldBuyNowPrice.getText().isEmpty())
                 {
                     System.err.println("You must enter a bid");
-                    System.exit(1);
+                    return;
                 }
 
                 //Try purchase

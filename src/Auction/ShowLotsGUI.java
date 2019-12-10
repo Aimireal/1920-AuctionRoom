@@ -43,7 +43,9 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
 
     private boolean loggedIn = false; //This can be used to check whether someone is logged in
     private String loggedUsrName; //Might add into UI to show who is logged in
+
     private String currentLotInfo; //String to store the currently selected lot information
+    private int lotIndex = 0; //Int to store the index of the selected lot to pull into our buy dialog
 
     private static int TWENTYFIVE_MILLS = 250;
     private static int ONE_SECOND = 1000;
@@ -140,6 +142,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
                 {
                     if(!listSelectionEvent.getValueIsAdjusting())
                     {
+                        lotIndex = listLots.getSelectedIndex();
                         currentLotInfo = listLots.getSelectedValue();
                     }
                 }
@@ -218,7 +221,8 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
                 } else
                 {
                     //Run the SellGUI class passing in our selected item details and logged in username
-                    JDialog dialog = PurchaseGUI.main(currentLotInfo, loggedUsrName);
+
+                    JDialog dialog = PurchaseGUI.main(lotIndex, currentLotInfo, loggedUsrName);
                 }
             }
         });
