@@ -20,8 +20,9 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
+import java.text.Collator;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 
 
 public class ShowLotsGUI extends JFrame implements RemoteEventListener
@@ -121,19 +122,6 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
             listLots.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-            /*
-            getContentPane().setLayout(null);
-            {
-                {
-                    ListModel lotModel = new DefaultComboBoxModel(new String[]{"No Lots Found"});
-                    listLots = new JList();
-                    scrPanLots.setViewportView(listLots);
-                    listLots.setModel(lotModel);
-                    listLots.setBounds(89, -31, 300, 400);
-                }
-            }
-             */
-
             //List Selection
             listLots.addListSelectionListener(new ListSelectionListener()
             {
@@ -142,14 +130,18 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
                 {
                     if(!listSelectionEvent.getValueIsAdjusting())
                     {
-                        lotIndex = listLots.getSelectedIndex();
+                        //Get selected rows item number
+                        String lotString = listLots.getSelectedValue();
+                        String[] parts = lotString.split("\\|");
+                        String trimmed = parts[0].trim();
+                        lotIndex = Integer.parseInt(trimmed);
                         currentLotInfo = listLots.getSelectedValue();
                     }
                 }
             });
         } catch (Exception e)
         {
-            e.printStackTrace();
+            System.err.println("Error setting up Lots display " + e);
         }
         viewLots();
     }
@@ -182,7 +174,8 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
                     if(item != null)
                     {
                         System.out.println("Found something: " + item.lotTitle); //TEST
-                        String lotInformation = item.lotTitle +
+                        String lotInformation = item.lotNum +
+                                " | " + item.lotTitle +
                                 " | Description: " + item.lotDesc +
                                 " | Seller: " + item.lotSellerID +
                                 " | Current Bid: £" + item.lotPrice +
@@ -221,7 +214,6 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
                 } else
                 {
                     //Run the SellGUI class passing in our selected item details and logged in username
-
                     JDialog dialog = PurchaseGUI.main(lotIndex, currentLotInfo, loggedUsrName);
                 }
             }

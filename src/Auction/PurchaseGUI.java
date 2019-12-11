@@ -16,6 +16,7 @@ import net.jini.space.JavaSpace;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 
 
@@ -201,21 +202,22 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
                     template.lotNum = currentLotIndex;
 
                     auctionLot = (AuctionItem)js.readIfExists(template, txn, FIVE_HUNDRED_MILLS);
-                    double userBid = Double.parseDouble(txtFldBid.getText());
-                    double lotPrice = Double.parseDouble(auctionLot.lotPrice);
+                    BigDecimal userBid = BigDecimal.valueOf(Long.parseLong(txtFldBid.getText()));
+                    BigDecimal lotPrice = BigDecimal.valueOf(Long.parseLong(auctionLot.lotPrice));
 
-                    if(lotPrice < userBid)
+                    if(lotPrice.compareTo(userBid) == 1)
                     {
                         try
                         {
                             js.take(auctionLot, txn, FIVE_HUNDRED_MILLS);
                             auctionLot.lotHighestBidder = curUser;
-                            auctionLot.lotBids++;
+                            //auctionLot.lotBids++; //only will be needed for display if we want that later
                             auctionLot.lotPrice = String.valueOf(userBid);
 
                             js.write(auctionLot, txn, Lease.FOREVER);
                             JOptionPane.showMessageDialog(null, "You are the highest bidder");
                             txn.commit();
+                            dispose();
                         }catch (NumberFormatException e)
                         {
                             JOptionPane.showMessageDialog(null, "Something went wrong, check bids value is right and try again");
@@ -259,6 +261,7 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
                 }
 
                 //Try purchase
+                assert trc != null;
                 Transaction txn = trc.transaction;
                 try
                 {
@@ -266,10 +269,12 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
                     template.lotNum = currentLotIndex;
 
                     auctionLot = (AuctionItem)js.readIfExists(template, txn, FIVE_HUNDRED_MILLS);
-                    double buyNowPrice = Double.parseDouble(txtFldBuyNowPrice.getText());
-                    double lotPrice = Double.parseDouble(auctionLot.lotPrice);
+                    String cleaned = txtFldBuyNowPrice.getText().replaceAll("[^\\d.]", "");
+                    System.out.println("Cleaned" + cleaned);
+                    BigDecimal buyNowPrice = BigDecimal.valueOf(Long.parseLong(cleaned));
+                    BigDecimal lotPrice = BigDecimal.valueOf(Long.parseLong(auctionLot.lotPrice));
 
-                    if(lotPrice <= buyNowPrice)
+                    if(buyNowPrice.compareTo(lotPrice) >= 0)
                     {
                         try
                         {
@@ -281,13 +286,15 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
                             js.write(auctionLot, txn, Lease.FOREVER);
                             JOptionPane.showMessageDialog(null, "You have purchased this lot. Please pay as soon as possible");
                             txn.commit();
+
+                            dispose();
                         }catch (NumberFormatException e)
                         {
                             JOptionPane.showMessageDialog(null, "Something went wrong. Please try again");
                         }
                     } else
                     {
-                        JOptionPane.showMessageDialog(null, "Buy now too low. This shouldn't happen");
+                        JOptionPane.showMessageDialog(null, "Buy now too low. Transaction Aborted");
                         txn.abort();
                     }
                 }catch (Exception e)
@@ -315,6 +322,7 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
     @Override
     public void notify(RemoteEvent remoteEvent) throws UnknownEventException, RemoteException
     {
+        /*
         AuctionItem template = new AuctionItem();
         template.lotHighestBidder = curUser;
         template.lotExpired = true;
@@ -328,5 +336,6 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
         {
             e.printStackTrace();
         }
+         */
     }
 }
