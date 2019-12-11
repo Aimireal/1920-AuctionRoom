@@ -9,6 +9,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
+import java.util.ArrayList;
 
 public class AccountLoginGUI extends JDialog
 {
@@ -83,7 +86,34 @@ public class AccountLoginGUI extends JDialog
 
     private void setupGUI()
     {
-        //Account login and creation methods and if any more setups are required
+        //Disable and enable buttons plus refresh lots display on focus active
+        ArrayList<JButton> allButtons = new ArrayList<>();
+        allButtons.add(btnCancel);
+        allButtons.add(btnCreateAccount);
+        allButtons.add(btnLogin);
+
+        this.addWindowFocusListener(new WindowFocusListener()
+        {
+            @Override
+            public void windowGainedFocus(WindowEvent windowEvent)
+            {
+                for(JButton button : allButtons)
+                {
+                    button.setEnabled(true);
+                }
+            }
+
+            @Override
+            public void windowLostFocus(WindowEvent windowEvent)
+            {
+                for(JButton button : allButtons)
+                {
+                    button.setEnabled(false);
+                }
+            }
+        });
+
+        //Setup for button functions
         loginButton();
         createButton();
         cancelButton();

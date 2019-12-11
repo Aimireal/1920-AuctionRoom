@@ -16,8 +16,11 @@ import net.jini.space.JavaSpace;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 
 public class PurchaseGUI extends JDialog implements RemoteEventListener
@@ -101,13 +104,9 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
             System.out.println("JavaSpace found");
         }
 
+        //Continue setup
         setupGUI();
         pullInformation();
-
-        //Setup buttons and functions
-        bidButton();
-        buyButton();
-        cancelButton();
     }
 
 
@@ -130,6 +129,38 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
         {
             e.printStackTrace();
         }
+
+        //Disable and enable buttons plus refresh lots display on focus active
+        ArrayList<JButton> allButtons = new ArrayList<>();
+        allButtons.add(btnBuyNow);
+        allButtons.add(btnCancel);
+        allButtons.add(btnPlaceBid);
+
+        this.addWindowFocusListener(new WindowFocusListener()
+        {
+            @Override
+            public void windowGainedFocus(WindowEvent windowEvent)
+            {
+                for(JButton button : allButtons)
+                {
+                    button.setEnabled(true);
+                }
+            }
+
+            @Override
+            public void windowLostFocus(WindowEvent windowEvent)
+            {
+                for(JButton button : allButtons)
+                {
+                    button.setEnabled(false);
+                }
+            }
+        });
+
+        //Setup for button functions
+        bidButton();
+        buyButton();
+        cancelButton();
     }
 
     public void pullInformation()

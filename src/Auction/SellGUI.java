@@ -10,6 +10,9 @@ import net.jini.space.JavaSpace;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
+import java.util.ArrayList;
 
 
 public class SellGUI extends JDialog
@@ -86,7 +89,33 @@ public class SellGUI extends JDialog
 
     private void setupGUI()
     {
-        //Setup for buttons and anything else for the class
+        //Disable and enable buttons plus refresh lots display on focus active
+        ArrayList<JButton> allButtons = new ArrayList<>();
+        allButtons.add(btnSubmitSale);
+        allButtons.add(btnCancel);
+
+        this.addWindowFocusListener(new WindowFocusListener()
+        {
+            @Override
+            public void windowGainedFocus(WindowEvent windowEvent)
+            {
+                for(JButton button : allButtons)
+                {
+                    button.setEnabled(true);
+                }
+            }
+
+            @Override
+            public void windowLostFocus(WindowEvent windowEvent)
+            {
+                for(JButton button : allButtons)
+                {
+                    button.setEnabled(false);
+                }
+            }
+        });
+
+        //Setup for button functions
         cancelButton();
         sellButton();
     }

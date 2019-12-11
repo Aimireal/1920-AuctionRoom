@@ -17,8 +17,8 @@ import net.jini.space.MatchSet;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.rmi.RemoteException;
 import java.text.Collator;
 import java.util.ArrayList;
@@ -72,6 +72,35 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
         this.getContentPane().setLayout(null);
         this.setContentPane(panelShowLots);
         this.pack();
+
+        //Disable and enable buttons plus refresh lots display on focus active
+        ArrayList<JButton> allButtons = new ArrayList<>();
+        allButtons.add(btnLogin);
+        allButtons.add(btnRefresh);
+        allButtons.add(btnSellLot);
+        allButtons.add(btnView);
+
+        this.addWindowFocusListener(new WindowFocusListener()
+        {
+            @Override
+            public void windowGainedFocus(WindowEvent windowEvent)
+            {
+                for(JButton button : allButtons)
+                {
+                    button.setEnabled(true);
+                    viewLots();
+                }
+            }
+
+            @Override
+            public void windowLostFocus(WindowEvent windowEvent)
+            {
+                for(JButton button : allButtons)
+                {
+                    button.setEnabled(false);
+                }
+            }
+        });
 
         //Find TransactionManager
         tranMan = SpaceUtils.getManager("localhost");
