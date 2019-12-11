@@ -18,17 +18,6 @@ public class AuctionLotStartQueue
             System.exit(1);
         }
 
-        /*
-        try
-        {
-            AccountQueue accQueue = new AccountQueue(0);
-            js.write(accQueue, null, Lease.FOREVER);
-            System.out.println("AccountQueue made and written to space");
-        } catch(Exception e)
-        {
-            System.err.println("Error. Unable to create AccountQueue or write to space");
-        }
-         */
 
         try
         {

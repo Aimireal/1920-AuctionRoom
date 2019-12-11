@@ -194,10 +194,11 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
                     System.exit(1);
                 }
 
-                //Place a bid based on the index on the current lot number
-                Transaction txn = trc.transaction;
                 try
                 {
+                    //Place a bid based on the index on the current lot number
+                    Transaction txn = trc.transaction;
+
                     AuctionItem template = new AuctionItem();
                     template.lotNum = currentLotIndex;
 

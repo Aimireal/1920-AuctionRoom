@@ -115,7 +115,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
                 js.notify(lotsTemplate, null, this.stub, Lease.FOREVER, null);
             } catch (Exception e)
             {
-                System.err.println("Failed to setup Notify: " + e);
+                System.err.println("Failed to setup Exporter: " + e);
             }
 
             //Setting up lot display
@@ -130,7 +130,8 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
                 {
                     if(!listSelectionEvent.getValueIsAdjusting())
                     {
-                        //Get selected rows item number
+                        //Get selected rows item number (First value before first pipe)
+                        //ToDo: Explore possibility of making Array of values to use for getting ID, as we might not want to display lot numbers
                         String lotString = listLots.getSelectedValue();
                         String[] parts = lotString.split("\\|");
                         String trimmed = parts[0].trim();
@@ -169,7 +170,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
                 boolean searching = true;
                 while(searching)
                 {
-                    System.out.println("In While Searching"); //TEST
+                    lotsTemplate.lotExpired = false;
                     AuctionItem item = (AuctionItem)js.takeIfExists(lotsTemplate, txn, ONE_SECOND);
                     if(item != null)
                     {

@@ -48,19 +48,6 @@ public class AuctionItem implements Entry
     }
 
 
-    public void addBid()
-    {
-        lotBids++;
-    }
-
-
-    public void newPrice(String newBid)
-    {
-        //Method for updating lot price when bids are placed
-        lotPrice = newBid;
-    }
-
-
     public long timeToMills(long t)
     {
         //Convert time for working out total time

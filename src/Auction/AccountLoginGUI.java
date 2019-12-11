@@ -184,14 +184,14 @@ public class AccountLoginGUI extends JDialog
             String username = txtfldUsername.getText();
             String password = txtfldPassword.getText();
 
-            //Check if AccountQueue object exists
+            //Check if AuctionLotQueue object exists
             AuctionLotQueue accountTemplate = new AuctionLotQueue();
             AuctionLotQueue accountStatus = (AuctionLotQueue)js.read(accountTemplate, null, TWO_SECONDS);
 
-            //If no AccountQueue found return else create and add account
+            //If no AuctionLotQueue found return else create and add account
             if(accountStatus == null)
             {
-                System.err.println("No AccountQueue Found");
+                System.err.println("No AuctionLotQueue Found");
                 dispose();
             } else
             {
