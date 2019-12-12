@@ -2,8 +2,30 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f4251e6a-bc80-45bf-90d5-85b881dc8db3" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/CHS2546_AuctionRoom.iws" beforeDir="false" afterPath="$PROJECT_DIR$/CHS2546_AuctionRoom.iws" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/AccountLoginGUI$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/AccountLoginGUI$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/AccountLoginGUI$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/AccountLoginGUI$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/AccountLoginGUI$3.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/AccountLoginGUI$3.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/AccountLoginGUI.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/AccountLoginGUI.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/AccountQueue.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/AuctionItem.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/AuctionItem.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/AuctionLotQueue.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/AuctionLotQueue.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/AuctionLotStartQueue.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/AuctionLotStartQueue.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/PurchaseGUI$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/PurchaseGUI$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/PurchaseGUI$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/PurchaseGUI$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/PurchaseGUI$3.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/PurchaseGUI$3.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/PurchaseGUI.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/PurchaseGUI.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/SellGUI$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/SellGUI$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/SellGUI$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/SellGUI$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/SellGUI.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/SellGUI.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/ShowLotsGUI$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/ShowLotsGUI$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/ShowLotsGUI$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/ShowLotsGUI$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/ShowLotsGUI$3.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/ShowLotsGUI$3.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/ShowLotsGUI$4.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/ShowLotsGUI$4.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/ShowLotsGUI.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CHS2546_AuctionRoom/Auction/ShowLotsGUI.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Auction/AccountLoginGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Auction/AccountLoginGUI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Auction/AuctionLotStartQueue.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Auction/AuctionLotStartQueue.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Auction/PurchaseGUI.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/Auction/PurchaseGUI.form" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Auction/PurchaseGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Auction/PurchaseGUI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Auction/SellGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Auction/SellGUI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Auction/ShowLotsGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Auction/ShowLotsGUI.java" afterDir="false" />
@@ -78,7 +100,8 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1574950748023</updated>
-      <workItem from="1574950749553" duration="3472000" />
+      <workItem from="1574950749553" duration="3578000" />
+      <workItem from="1576159984947" duration="3895000" />
     </task>
     <servers />
   </component>
@@ -90,7 +113,9 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>

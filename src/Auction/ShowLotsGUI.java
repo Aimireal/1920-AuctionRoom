@@ -103,7 +103,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
         });
 
         //Find TransactionManager
-        tranMan = SpaceUtils.getManager("localhost");
+        tranMan = SpaceUtils.getManager("waterloo");
         if (tranMan == null)
         {
             System.err.println("TransactionManager not found on LocalHost");
@@ -113,7 +113,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
         }
 
         //Find JavaSpace
-        js = SpaceUtils.getSpace("localhost");
+        js = SpaceUtils.getSpace("waterloo");
         if (js == null)
         {
             System.err.println("JavaSpace not found on LocalHost");
@@ -179,6 +179,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
 
     public void viewLots()
     {
+        //ToDo: Make sure lot is not expired before adding to list. Seems to be not working properly
         //Create Transaction
         try
         {
@@ -201,7 +202,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
                 {
                     lotsTemplate.lotExpired = false;
                     AuctionItem item = (AuctionItem)js.takeIfExists(lotsTemplate, txn, ONE_SECOND);
-                    if(item != null)
+                    if(item != null && !item.lotExpired)
                     {
                         System.out.println("Found something: " + item.lotTitle); //TEST
                         String lotInformation = item.lotNum +

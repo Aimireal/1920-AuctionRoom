@@ -4,8 +4,10 @@ import net.jini.core.event.RemoteEvent;
 import net.jini.core.event.RemoteEventListener;
 import net.jini.core.event.UnknownEventException;
 import net.jini.core.lease.Lease;
+import net.jini.core.transaction.CannotAbortException;
 import net.jini.core.transaction.Transaction;
 import net.jini.core.transaction.TransactionFactory;
+import net.jini.core.transaction.UnknownTransactionException;
 import net.jini.core.transaction.server.TransactionManager;
 import net.jini.export.Exporter;
 import net.jini.jeri.BasicILFactory;
@@ -34,6 +36,7 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
     private JLabel lblLotDesc;
     private JLabel lblLotTitle;
     private JLabel lblCurrentBid;
+    private JButton btnEndListing;
 
     private JavaSpace js;
     private TransactionManager tranMan;
@@ -68,7 +71,8 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
         //Pull through the lot information
         currentLotIndex = lotIndex;
         currentLotInfo = lotInfo;
-        System.err.println(currentLotIndex);
+        System.out.println(lotInfo);
+        System.out.println(currentLotIndex);
 
         curUser = loggedUser;
         return null;
@@ -85,7 +89,7 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
         this.pack();
 
         //Find TransactionManager
-        tranMan = SpaceUtils.getManager("localhost");
+        tranMan = SpaceUtils.getManager("waterloo");
         if (tranMan == null)
         {
             System.err.println("TransactionManager not found on LocalHost");
@@ -95,7 +99,7 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
         }
 
         //Find JavaSpace
-        js = SpaceUtils.getSpace("localhost");
+        js = SpaceUtils.getSpace("waterloo");
         if (js == null)
         {
             System.err.println("JavaSpace not found on LocalHost");
@@ -161,6 +165,7 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
         bidButton();
         buyButton();
         cancelButton();
+        endButton();
     }
 
     public void pullInformation()
@@ -237,7 +242,7 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
                     BigDecimal userBid = BigDecimal.valueOf(Long.parseLong(txtFldBid.getText()));
                     BigDecimal lotPrice = BigDecimal.valueOf(Long.parseLong(auctionLot.lotPrice));
 
-                    if(lotPrice.compareTo(userBid) == 1)
+                    if(userBid.compareTo(lotPrice) >= 1)
                     {
                         try
                         {
@@ -332,6 +337,71 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
                 }catch (Exception e)
                 {
                     e.printStackTrace();
+                }
+            }
+        });
+    }
+
+
+    private void endButton()
+    {
+        //Method to end listings early
+        btnEndListing.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                //Get lot info and if current user and lot owner match enable End Listing button
+                String[] parts = currentLotInfo.split("\\|");
+                String trimmed = parts[3].trim();
+                String verified = trimmed.substring(trimmed.indexOf(":")).replaceAll(":", "").trim();
+                System.out.println("Owner of lot: " + verified);
+
+                if(verified.equals(curUser))
+                {
+                    //Create transaction
+                    Transaction.Created trc = null;
+                    try
+                    {
+                        trc = TransactionFactory.create(tranMan, FIVE_SECONDS);
+                    }catch (Exception e)
+                    {
+                        System.err.println("Failed to create Transaction");
+                    }
+
+                    Transaction txn = trc.transaction;
+
+                    //Attempt to remove the lot from view in transaction
+                    AuctionItem template = new AuctionItem();
+                    template.lotNum = currentLotIndex;
+                    try
+                    {
+                        auctionLot = (AuctionItem)js.take(template, txn, FIVE_HUNDRED_MILLS);
+                        auctionLot.lotExpired = true;
+                        auctionLot.lotPrice = "0";
+                        auctionLot.lotBuyNowPrice = "0";
+                        auctionLot.lotHighestBidder = "";
+
+                        js.write(auctionLot, txn, Lease.FOREVER);
+                        JOptionPane.showMessageDialog(null, "This lot has been removed from auction");
+                        txn.commit();
+
+                        dispose();
+                    }catch (Exception e)
+                    {
+                        System.err.println("Failed to remove the lot" + e);
+                        try
+                        {
+                            txn.abort();
+                        } catch (UnknownTransactionException | CannotAbortException | RemoteException ex)
+                        {
+                            ex.printStackTrace();
+                        }
+                    }
+                } else
+                {
+                    JOptionPane.showMessageDialog(null, "You are not the owner of this lot.");
+                    dispose();
                 }
             }
         });
