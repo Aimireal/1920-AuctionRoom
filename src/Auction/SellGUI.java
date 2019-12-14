@@ -193,17 +193,18 @@ public class SellGUI extends JDialog
             }
             Transaction txn = trc.transaction;
 
+            //Using a counter is fine as we never remove lots, just set them hidden so we can't have multiples of the same
             boolean searching = true;
             while(searching)
             {
-                System.out.println("In While Searching"); //TEST
+                System.out.println("In While Searching");
                 AuctionItem item = (AuctionItem)js.takeIfExists(lotsTemplate, txn, ONE_SECOND);
                 if(item != null)
                 {
                     lotCounter++;
                 } else
                 {
-                    System.out.println("Searching Finished, Counter: " + lotCounter); //TEST
+                    System.out.println("Searching Finished, Counter: " + lotCounter);
                     searching = false;
                 }
             }

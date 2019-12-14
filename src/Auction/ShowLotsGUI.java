@@ -162,10 +162,14 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
                         //Get selected rows item number (First value before first pipe)
                         //ToDo: Explore possibility of making Array of values to use for getting ID, as we might not want to display lot numbers
                         String lotString = listLots.getSelectedValue();
-                        String[] parts = lotString.split("\\|");
-                        String trimmed = parts[0].trim();
-                        lotIndex = Integer.parseInt(trimmed);
-                        currentLotInfo = listLots.getSelectedValue();
+                        if(lotString != null)
+                        {
+                            String[] parts = lotString.split("\\|");
+                            String trimmed = parts[0].trim();
+                            lotIndex = Integer.parseInt(trimmed);
+                            currentLotInfo = listLots.getSelectedValue();
+                        }
+
                     }
                 }
             });
