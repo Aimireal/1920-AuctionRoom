@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="dependencies">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/dependencies/reggie.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dependencies/jsk-platform.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dependencies/jsk-lib.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dependencies/outrigger.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dependencies/outrigger-dl.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

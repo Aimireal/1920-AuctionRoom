@@ -406,8 +406,8 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
                 try
                 {
                     //Get bid DateTime
-                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-DD 'at' HH:mm:ss z");
-                    Date date = new Date(System.currentTimeMillis());
+                    Date date = new Date();
+                    SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
                     String newDate = formatter.format(date);
 
                     //Place bid into space
