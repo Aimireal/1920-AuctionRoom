@@ -14,6 +14,7 @@ import net.jini.jeri.BasicILFactory;
 import net.jini.jeri.BasicJeriExporter;
 import net.jini.jeri.tcp.TcpServerEndpoint;
 import net.jini.space.JavaSpace;
+import org.apache.river.api.security.DelegateSecurityManager;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -37,13 +38,17 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
     private JLabel lblLotTitle;
     private JLabel lblCurrentBid;
     private JButton btnEndListing;
+    private JList<String> JListBidHistory;
+    private JScrollPane JScrPanHistory;
 
     private JavaSpace js;
     private TransactionManager tranMan;
     private RemoteEventListener stub;
 
-    private AuctionItem auctionLot;
+
+    public AuctionItem auctionLot;
     public AuctionItem lotsTemplate = new AuctionItem();
+    public BidItem bidsTemplate = new BidItem();
 
     public static int curLotNum = 0; //This might not be needed, or we can use this to pull details instead of passing on launch
     public static String curUser = "PLACEHOLDER"; //Currently logged in user
@@ -54,10 +59,6 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
 
     public static int currentLotIndex;
     public static String currentLotInfo = "PLACEHOLDER";
-
-    private static int FIVE_HUNDRED_MILLS = 500;
-    private static int TWO_SECONDS = 2000;
-    private static int FIVE_SECONDS = 5000;
 
 
     public static JDialog main(int lotIndex, String lotInfo, String loggedUser)
@@ -89,20 +90,20 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
         this.pack();
 
         //Find TransactionManager
-        tranMan = SpaceUtils.getManager("waterloo");
+        tranMan = SpaceUtils.getManager(SpaceUtils.host);
         if (tranMan == null)
         {
-            System.err.println("TransactionManager not found on LocalHost");
+            System.err.println("TransactionManager not found on " + SpaceUtils.host);
         } else
         {
             System.out.println("TransactionManager found");
         }
 
         //Find JavaSpace
-        js = SpaceUtils.getSpace("waterloo");
+        js = SpaceUtils.getSpace(SpaceUtils.host);
         if (js == null)
         {
-            System.err.println("JavaSpace not found on LocalHost");
+            System.err.println("JavaSpace not found on " + SpaceUtils.host);
         } else
         {
             System.out.println("JavaSpace found");
@@ -134,33 +135,6 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
             e.printStackTrace();
         }
 
-        //Disable and enable buttons plus refresh lots display on focus active
-        ArrayList<JButton> allButtons = new ArrayList<>();
-        allButtons.add(btnBuyNow);
-        allButtons.add(btnCancel);
-        allButtons.add(btnPlaceBid);
-
-        this.addWindowFocusListener(new WindowFocusListener()
-        {
-            @Override
-            public void windowGainedFocus(WindowEvent windowEvent)
-            {
-                for(JButton button : allButtons)
-                {
-                    button.setEnabled(true);
-                }
-            }
-
-            @Override
-            public void windowLostFocus(WindowEvent windowEvent)
-            {
-                for(JButton button : allButtons)
-                {
-                    button.setEnabled(false);
-                }
-            }
-        });
-
         //Setup for button functions
         bidButton();
         buyButton();
@@ -175,7 +149,7 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
             Transaction.Created trc = null;
             try
             {
-                trc = TransactionFactory.create(tranMan, TWO_SECONDS);
+                trc = TransactionFactory.create(tranMan, SpaceUtils.TWO_SECONDS);
             }catch (Exception e)
             {
                 System.out.print("Failed to create Transaction");
@@ -183,7 +157,7 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
             Transaction txn = trc.transaction;
 
             lotsTemplate.lotNum = currentLotIndex;
-            AuctionItem item = (AuctionItem)js.takeIfExists(lotsTemplate, txn, TWO_SECONDS);
+            AuctionItem item = (AuctionItem)js.takeIfExists(lotsTemplate, txn, SpaceUtils.TWO_SECONDS);
 
             //Set local info
             curLotNum = currentLotIndex;
@@ -199,6 +173,7 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
             txtFldBuyNowPrice.setText("£" + curLotBuyPrice);
 
             txn.abort();
+            getBidHistory();
         }catch (Exception e)
         {
             System.err.println("Unable to Search");
@@ -217,7 +192,7 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
                 Transaction.Created trc = null;
                 try
                 {
-                    trc = TransactionFactory.create(tranMan, FIVE_SECONDS);
+                    trc = TransactionFactory.create(tranMan, SpaceUtils.TWO_SECONDS);
                 }catch (Exception e)
                 {
                     System.err.println("Failed to create Transaction");
@@ -238,7 +213,7 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
                     AuctionItem template = new AuctionItem();
                     template.lotNum = currentLotIndex;
 
-                    auctionLot = (AuctionItem)js.readIfExists(template, txn, FIVE_HUNDRED_MILLS);
+                    auctionLot = (AuctionItem)js.readIfExists(template, txn, SpaceUtils.HALF_SECOND);
                     BigDecimal userBid = BigDecimal.valueOf(Long.parseLong(txtFldBid.getText()));
                     BigDecimal lotPrice = BigDecimal.valueOf(Long.parseLong(auctionLot.lotPrice));
 
@@ -246,14 +221,14 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
                     {
                         try
                         {
-                            js.take(auctionLot, txn, FIVE_HUNDRED_MILLS);
+                            js.take(auctionLot, txn, SpaceUtils.HALF_SECOND);
                             auctionLot.lotHighestBidder = curUser;
-                            //auctionLot.lotBids++; //only will be needed for display if we want that later
                             auctionLot.lotPrice = String.valueOf(userBid);
 
                             js.write(auctionLot, txn, Lease.FOREVER);
                             JOptionPane.showMessageDialog(null, "You are the highest bidder");
                             txn.commit();
+                            writeBidHistory();
                             dispose();
                         }catch (NumberFormatException e)
                         {
@@ -284,7 +259,7 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
                 Transaction.Created trc = null;
                 try
                 {
-                    trc = TransactionFactory.create(tranMan, FIVE_SECONDS);
+                    trc = TransactionFactory.create(tranMan, SpaceUtils.TWO_SECONDS);
                 }catch (Exception e)
                 {
                     System.err.println("Failed to create Transaction");
@@ -305,7 +280,7 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
                     AuctionItem template = new AuctionItem();
                     template.lotNum = currentLotIndex;
 
-                    auctionLot = (AuctionItem)js.readIfExists(template, txn, FIVE_HUNDRED_MILLS);
+                    auctionLot = (AuctionItem)js.readIfExists(template, txn, SpaceUtils.HALF_SECOND);
                     String cleaned = txtFldBuyNowPrice.getText().replaceAll("[^\\d.]", "");
                     System.out.println("Cleaned" + cleaned);
                     BigDecimal buyNowPrice = BigDecimal.valueOf(Long.parseLong(cleaned));
@@ -315,7 +290,7 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
                     {
                         try
                         {
-                            js.take(auctionLot, txn, FIVE_HUNDRED_MILLS);
+                            js.take(auctionLot, txn, SpaceUtils.HALF_SECOND);
                             auctionLot.lotHighestBidder = curUser;
                             auctionLot.lotPrice = String.valueOf(buyNowPrice);
                             auctionLot.lotExpired = true;
@@ -363,7 +338,7 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
                     Transaction.Created trc = null;
                     try
                     {
-                        trc = TransactionFactory.create(tranMan, FIVE_SECONDS);
+                        trc = TransactionFactory.create(tranMan, SpaceUtils.TWO_SECONDS);
                     }catch (Exception e)
                     {
                         System.err.println("Failed to create Transaction");
@@ -376,7 +351,7 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
                     template.lotNum = currentLotIndex;
                     try
                     {
-                        auctionLot = (AuctionItem)js.take(template, txn, FIVE_HUNDRED_MILLS);
+                        auctionLot = (AuctionItem)js.take(template, txn, SpaceUtils.HALF_SECOND);
                         auctionLot.lotExpired = true;
                         auctionLot.lotPrice = "0";
                         auctionLot.lotBuyNowPrice = "0";
@@ -408,6 +383,85 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
     }
 
 
+    private void writeBidHistory()
+    {
+        try
+        {
+            //Make sure AuctionLotQueue object exists
+            AuctionLotQueue aucTemplate = new AuctionLotQueue();
+            AuctionLotQueue aucStatus = (AuctionLotQueue)js.read(aucTemplate, null, SpaceUtils.TWO_SECONDS);
+
+            //If no queue found return else add bid to history
+            if(aucStatus == null)
+            {
+                System.err.println("No AuctionLotQueue found");
+                dispose();
+            } else
+            {
+                try
+                {
+                    BidItem newBid = new BidItem(currentLotIndex, curUser, curLotBidPrice);
+                    js.write(newBid, null, Lease.FOREVER);
+
+                    System.out.println("Successfully added bid to history");
+                }catch (Exception e)
+                {
+                    System.err.println("Failed to add bid to history");
+                }
+            }
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+
+    private void getBidHistory()
+    {
+        //Create Transaction so we can pull all lots without committing
+        try
+        {
+            Transaction.Created trc = null;
+            try
+            {
+                trc = TransactionFactory.create(tranMan, SpaceUtils.TWO_SECONDS);
+            }catch (Exception e)
+            {
+                System.out.print("Failed to create Transaction");
+            }
+            Transaction txn = trc.transaction;
+
+            //Adding items to JList
+            DefaultListModel<String> listModel = new DefaultListModel<>();
+            try
+            {
+                boolean searching = true;
+                while(searching)
+                {
+                    bidsTemplate.lotNumber = currentLotIndex;
+                    BidItem item = (BidItem)js.takeIfExists(bidsTemplate, txn, SpaceUtils.TWO_SECONDS);
+                    if(item != null)
+                    {
+                        String bidInformation = "Bidder: " + item.bidAccount
+                                +  " | " + "Amount: £" + item.bidAmount;
+                        listModel.addElement(bidInformation);
+                        JListBidHistory.setModel(listModel);
+                    } else
+                    {
+                        searching = false;
+                    }
+                }
+            }catch (Exception e)
+            {
+                System.err.println("Failed to create bid history list: " + e);
+            }
+        } catch (Exception e)
+        {
+            System.err.println("Failed to run method: " + e);
+        }
+    }
+
+
     private void cancelButton()
     {
         btnCancel.addActionListener(new ActionListener()
@@ -431,7 +485,7 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
 
         try
         {
-            AuctionItem notifyLot = (AuctionItem)js.readIfExists(template, null, FIVE_SECONDS);
+            AuctionItem notifyLot = (AuctionItem)js.readIfExists(template, null, SpaceUtils.TWO_SECONDS);
             JOptionPane.showMessageDialog(null, "Well done " + curUser + " you won the auction for £" +
                     curLotBidPrice + ", please pay for the item as soon as possible");
         }catch (Exception e)

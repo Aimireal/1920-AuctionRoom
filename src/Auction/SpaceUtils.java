@@ -9,9 +9,15 @@ import net.jini.core.lookup.ServiceRegistrar;
 import net.jini.core.lookup.ServiceTemplate;
 import net.jini.core.transaction.server.TransactionManager;
 
+
 public class SpaceUtils
 {
-    //This code is from Gary, it has been left mostly unchanged other than localhost addition
+    //This code is from Gary, unchanged other than the variables below
+    public static String host = "localhost";
+    public static int HALF_SECOND = 500;
+    public static int TWO_SECONDS = 2000;
+    //----------------------------------------------------------------
+
     public static JavaSpace getSpace(String hostname)
     {
         if(System.getSecurityManager() == null)

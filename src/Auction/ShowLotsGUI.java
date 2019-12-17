@@ -48,11 +48,6 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
     private String currentLotInfo; //String to store the currently selected lot information
     private int lotIndex = 0; //Int to store the index of the selected lot to pull into our buy dialog
 
-    private static int TWENTYFIVE_MILLS = 250;
-    private static int ONE_SECOND = 1000;
-    private static int THREE_SECONDS = 3000;
-    private static int FIVE_SECONDS = 5000;
-
 
     public static void main(String[] args)
     {
@@ -73,50 +68,37 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
         this.setContentPane(panelShowLots);
         this.pack();
 
-        //Disable and enable buttons plus refresh lots display on focus active
-        ArrayList<JButton> allButtons = new ArrayList<>();
-        allButtons.add(btnLogin);
-        allButtons.add(btnRefresh);
-        allButtons.add(btnSellLot);
-        allButtons.add(btnView);
-
+        //Refresh lotList on focus
         this.addWindowFocusListener(new WindowFocusListener()
         {
             @Override
             public void windowGainedFocus(WindowEvent windowEvent)
             {
-                for(JButton button : allButtons)
-                {
-                    button.setEnabled(true);
-                    viewLots();
-                }
+                viewLots();
             }
 
             @Override
             public void windowLostFocus(WindowEvent windowEvent)
             {
-                for(JButton button : allButtons)
-                {
-                    button.setEnabled(false);
-                }
+                viewLots();
             }
         });
 
         //Find TransactionManager
-        tranMan = SpaceUtils.getManager("waterloo");
+        tranMan = SpaceUtils.getManager(SpaceUtils.host);
         if (tranMan == null)
         {
-            System.err.println("TransactionManager not found on LocalHost");
+            System.err.println("TransactionManager not found on " + SpaceUtils.host);
         } else
         {
             System.out.println("TransactionManager found");
         }
 
         //Find JavaSpace
-        js = SpaceUtils.getSpace("waterloo");
+        js = SpaceUtils.getSpace(SpaceUtils.host);
         if (js == null)
         {
-            System.err.println("JavaSpace not found on LocalHost");
+            System.err.println("JavaSpace not found on " + SpaceUtils.host);
         } else
         {
             System.out.println("JavaSpace found");
@@ -183,14 +165,13 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
 
     public void viewLots()
     {
-        //ToDo: Make sure lot is not expired before adding to list. Seems to be not working properly
-        //Create Transaction
+        //Create Transaction so we can pull all lots without committing
         try
         {
             Transaction.Created trc = null;
             try
             {
-                trc = TransactionFactory.create(tranMan, THREE_SECONDS);
+                trc = TransactionFactory.create(tranMan, SpaceUtils.TWO_SECONDS);
             }catch (Exception e)
             {
                 System.out.print("Failed to create Transaction");
@@ -205,10 +186,10 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
                 while(searching)
                 {
                     lotsTemplate.lotExpired = false;
-                    AuctionItem item = (AuctionItem)js.takeIfExists(lotsTemplate, txn, ONE_SECOND);
+                    AuctionItem item = (AuctionItem)js.takeIfExists(lotsTemplate, txn, SpaceUtils.TWO_SECONDS);
                     if(item != null && !item.lotExpired)
                     {
-                        System.out.println("Found something: " + item.lotTitle); //TEST
+                        System.out.println("Found something: " + item.lotTitle);
                         String lotInformation = item.lotNum +
                                 " | " + item.lotTitle +
                                 " | Description: " + item.lotDesc +
@@ -220,9 +201,17 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
                         listLots.setModel(listModel);
                     } else
                     {
-                        System.out.println("Searching Finished"); //TEST
                         searching = false;
                     }
+                }
+
+                //Enable/Disable based on if we have any values returned
+                if(listModel.isEmpty())
+                {
+                    btnView.setEnabled(false);
+                } else
+                {
+                    btnView.setEnabled(true);
                 }
             }catch (Exception e)
             {

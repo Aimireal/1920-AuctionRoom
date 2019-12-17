@@ -11,7 +11,7 @@ public class AuctionLotStartQueue
 {
     public static void main(String args[])
     {
-        JavaSpace js = SpaceUtils.getSpace("waterloo");
+        JavaSpace js = SpaceUtils.getSpace(SpaceUtils.host);
         if(js == null)
         {
             System.err.println("Failed to find JavaSpace");

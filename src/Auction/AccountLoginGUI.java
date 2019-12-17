@@ -28,10 +28,6 @@ public class AccountLoginGUI extends JDialog
 
     private AccountItem userAccount;
 
-    private static int FIVE_HUNDRED_MILLS = 500;
-    private static int TWO_SECONDS = 2000;
-    private static int FIVE_SECONDS = 5000;
-
     public boolean loggedIn = false;
     public String loggedAs;
 
@@ -61,20 +57,20 @@ public class AccountLoginGUI extends JDialog
         this.setModalityType(DEFAULT_MODALITY_TYPE);
 
         //Find TransactionManager
-        tranMan = SpaceUtils.getManager("waterloo");
+        tranMan = SpaceUtils.getManager(SpaceUtils.host);
         if (tranMan == null)
         {
-            System.err.println("TransactionManager not found on LocalHost");
+            System.err.println("TransactionManager not found on " + SpaceUtils.host);
         } else
         {
             System.out.println("TransactionManager found");
         }
 
         //Find JavaSpace
-        js = SpaceUtils.getSpace("waterloo");
+        js = SpaceUtils.getSpace(SpaceUtils.host);
         if (js == null)
         {
-            System.err.println("JavaSpace not found on LocalHost");
+            System.err.println("JavaSpace not found on " + SpaceUtils.host);
         } else
         {
             System.out.println("JavaSpace found");
@@ -86,33 +82,6 @@ public class AccountLoginGUI extends JDialog
 
     private void setupGUI()
     {
-        //Disable and enable buttons plus refresh lots display on focus active
-        ArrayList<JButton> allButtons = new ArrayList<>();
-        allButtons.add(btnCancel);
-        allButtons.add(btnCreateAccount);
-        allButtons.add(btnLogin);
-
-        this.addWindowFocusListener(new WindowFocusListener()
-        {
-            @Override
-            public void windowGainedFocus(WindowEvent windowEvent)
-            {
-                for(JButton button : allButtons)
-                {
-                    button.setEnabled(true);
-                }
-            }
-
-            @Override
-            public void windowLostFocus(WindowEvent windowEvent)
-            {
-                for(JButton button : allButtons)
-                {
-                    button.setEnabled(false);
-                }
-            }
-        });
-
         //Setup for button functions
         loginButton();
         createButton();
@@ -137,7 +106,7 @@ public class AccountLoginGUI extends JDialog
                         accountTemplate.accountName = txtfldUsername.getText();
                         accountTemplate.accountPassword = txtfldPassword.getText();
 
-                        userAccount = (AccountItem)js.readIfExists(accountTemplate, null, FIVE_HUNDRED_MILLS);
+                        userAccount = (AccountItem)js.readIfExists(accountTemplate, null, SpaceUtils.HALF_SECOND);
                         if(userAccount == null)
                         {
                             JOptionPane.showMessageDialog(null, "No account found or wrong details");
@@ -187,10 +156,11 @@ public class AccountLoginGUI extends JDialog
                         AccountItem accountTemplate = new AccountItem();
                         accountTemplate.accountName = txtfldUsername.getText();
 
-                        userAccount = (AccountItem)js.readIfExists(accountTemplate, null, FIVE_HUNDRED_MILLS);
+                        userAccount = (AccountItem)js.readIfExists(accountTemplate, null, SpaceUtils.HALF_SECOND);
                         if(userAccount == null)
                         {
                             createUser();
+                            JOptionPane.showMessageDialog(null, "Successfully created account");
                         } else
                         {
                             JOptionPane.showMessageDialog(null, "An account with this name exists, please choose another");
@@ -216,7 +186,7 @@ public class AccountLoginGUI extends JDialog
 
             //Check if AuctionLotQueue object exists
             AuctionLotQueue accountTemplate = new AuctionLotQueue();
-            AuctionLotQueue accountStatus = (AuctionLotQueue)js.read(accountTemplate, null, TWO_SECONDS);
+            AuctionLotQueue accountStatus = (AuctionLotQueue)js.read(accountTemplate, null, SpaceUtils.TWO_SECONDS);
 
             //If no AuctionLotQueue found return else create and add account
             if(accountStatus == null)

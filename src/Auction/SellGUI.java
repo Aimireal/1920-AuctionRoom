@@ -38,9 +38,6 @@ public class SellGUI extends JDialog
 
     public AuctionItem lotsTemplate = new AuctionItem();
 
-    private static int ONE_SECOND = 1000;
-    private static int TWO_SECONDS = 2000;
-
 
     public static JDialog main(String loggedInUsr)
     {
@@ -64,20 +61,20 @@ public class SellGUI extends JDialog
         this.pack();
 
         //Find TransactionManager
-        tranMan = SpaceUtils.getManager("waterloo");
+        tranMan = SpaceUtils.getManager(SpaceUtils.host);
         if (tranMan == null)
         {
-            System.err.println("TransactionManager not found on LocalHost");
+            System.err.println("TransactionManager not found on " + SpaceUtils.host);
         } else
         {
             System.out.println("TransactionManager found");
         }
 
         //Find JavaSpace
-        js = SpaceUtils.getSpace("waterloo");
+        js = SpaceUtils.getSpace(SpaceUtils.host);
         if (js == null)
         {
-            System.err.println("JavaSpace not found on LocalHost");
+            System.err.println("JavaSpace not found on " + SpaceUtils.host);
         } else
         {
             System.out.println("JavaSpace found");
@@ -89,32 +86,6 @@ public class SellGUI extends JDialog
 
     private void setupGUI()
     {
-        //Disable and enable buttons plus refresh lots display on focus active
-        ArrayList<JButton> allButtons = new ArrayList<>();
-        allButtons.add(btnSubmitSale);
-        allButtons.add(btnCancel);
-
-        this.addWindowFocusListener(new WindowFocusListener()
-        {
-            @Override
-            public void windowGainedFocus(WindowEvent windowEvent)
-            {
-                for(JButton button : allButtons)
-                {
-                    button.setEnabled(true);
-                }
-            }
-
-            @Override
-            public void windowLostFocus(WindowEvent windowEvent)
-            {
-                for(JButton button : allButtons)
-                {
-                    button.setEnabled(false);
-                }
-            }
-        });
-
         //Setup for button functions
         cancelButton();
         sellButton();
@@ -143,7 +114,7 @@ public class SellGUI extends JDialog
             {
                 //Check if AuctionLotQueue object exists
                 AuctionLotQueue auctionTemplate = new AuctionLotQueue();
-                AuctionLotQueue auctionStatus = (AuctionLotQueue)js.read(auctionTemplate, null, TWO_SECONDS);
+                AuctionLotQueue auctionStatus = (AuctionLotQueue)js.read(auctionTemplate, null, SpaceUtils.TWO_SECONDS);
 
                 //If no AuctionLotQueue found return else add lot for sale
                 if(auctionStatus == null)
@@ -186,7 +157,7 @@ public class SellGUI extends JDialog
             Transaction.Created trc = null;
             try
             {
-                trc = TransactionFactory.create(tranMan, TWO_SECONDS);
+                trc = TransactionFactory.create(tranMan, SpaceUtils.TWO_SECONDS);
             }catch (Exception e)
             {
                 System.out.print("Failed to create Transaction");
@@ -198,7 +169,7 @@ public class SellGUI extends JDialog
             while(searching)
             {
                 System.out.println("In While Searching");
-                AuctionItem item = (AuctionItem)js.takeIfExists(lotsTemplate, txn, ONE_SECOND);
+                AuctionItem item = (AuctionItem)js.takeIfExists(lotsTemplate, txn, SpaceUtils.TWO_SECONDS);
                 if(item != null)
                 {
                     lotCounter++;

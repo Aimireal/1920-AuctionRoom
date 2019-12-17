@@ -15,7 +15,7 @@ public class AccountItem implements Entry
 
     public AccountItem()
     {
-        //No args template
+        //No args constructor
     }
 
 
