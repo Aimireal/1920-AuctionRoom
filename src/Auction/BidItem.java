@@ -12,16 +12,18 @@ public class BidItem implements Entry
     public Integer lotNumber;
     public String bidAccount;
     public String bidAmount;
+    public String bidDateTime;
 
     public BidItem()
     {
         //No args constructor
     }
 
-    public BidItem(Integer lotCounter, String bidderAccount, String bidderAmount)
+    public BidItem(Integer lotCounter, String bidderAccount, String bidderAmount, String newDateTime)
     {
         lotNumber = lotCounter;
         bidAmount = bidderAmount;
         bidAmount = bidderAccount;
+        bidDateTime = newDateTime;
     }
 }

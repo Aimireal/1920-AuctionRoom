@@ -23,7 +23,10 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 
 public class PurchaseGUI extends JDialog implements RemoteEventListener
@@ -140,6 +143,9 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
         buyButton();
         cancelButton();
         endButton();
+
+        //Setup bid history list
+        getBidHistory();
     }
 
     public void pullInformation()
@@ -173,7 +179,6 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
             txtFldBuyNowPrice.setText("£" + curLotBuyPrice);
 
             txn.abort();
-            getBidHistory();
         }catch (Exception e)
         {
             System.err.println("Unable to Search");
@@ -400,10 +405,16 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
             {
                 try
                 {
-                    BidItem newBid = new BidItem(currentLotIndex, curUser, curLotBidPrice);
+                    //Get bid DateTime
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-DD 'at' HH:mm:ss z");
+                    Date date = new Date(System.currentTimeMillis());
+                    String newDate = formatter.format(date);
+
+                    //Place bid into space
+                    BidItem newBid = new BidItem(currentLotIndex, curUser, txtFldBid.getText(), newDate);
                     js.write(newBid, null, Lease.FOREVER);
 
-                    System.out.println("Successfully added bid to history");
+                    System.out.println("Added bid to history " + curUser + " " + curLotBuyPrice);
                 }catch (Exception e)
                 {
                     System.err.println("Failed to add bid to history");
@@ -443,7 +454,8 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
                     if(item != null)
                     {
                         String bidInformation = "Bidder: " + item.bidAccount
-                                +  " | " + "Amount: £" + item.bidAmount;
+                                +  " | " + "Amount: £" + item.bidAmount
+                                +  " | " + "Time Bid Placed: " + item.bidDateTime;
                         listModel.addElement(bidInformation);
                         JListBidHistory.setModel(listModel);
                     } else
