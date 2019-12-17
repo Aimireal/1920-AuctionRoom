@@ -22,8 +22,8 @@ public class BidItem implements Entry
     public BidItem(Integer lotCounter, String bidderAccount, String bidderAmount, String newDateTime)
     {
         lotNumber = lotCounter;
+        bidAccount = bidderAccount;
         bidAmount = bidderAmount;
-        bidAmount = bidderAccount;
         bidDateTime = newDateTime;
     }
 }

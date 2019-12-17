@@ -59,7 +59,6 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
     public static String curLotDesc = "DESC";
     public String curLotBidPrice = "0";
     public String curLotBuyPrice = "0";
-
     public static int currentLotIndex;
     public static String currentLotInfo = "PLACEHOLDER";
 
@@ -287,7 +286,6 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
 
                     auctionLot = (AuctionItem)js.readIfExists(template, txn, SpaceUtils.HALF_SECOND);
                     String cleaned = txtFldBuyNowPrice.getText().replaceAll("[^\\d.]", "");
-                    System.out.println("Cleaned" + cleaned);
                     BigDecimal buyNowPrice = BigDecimal.valueOf(Long.parseLong(cleaned));
                     BigDecimal lotPrice = BigDecimal.valueOf(Long.parseLong(auctionLot.lotPrice));
 
@@ -335,7 +333,6 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
                 String[] parts = currentLotInfo.split("\\|");
                 String trimmed = parts[3].trim();
                 String verified = trimmed.substring(trimmed.indexOf(":")).replaceAll(":", "").trim();
-                System.out.println("Owner of lot: " + verified);
 
                 if(verified.equals(curUser))
                 {
@@ -414,7 +411,7 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
                     BidItem newBid = new BidItem(currentLotIndex, curUser, txtFldBid.getText(), newDate);
                     js.write(newBid, null, Lease.FOREVER);
 
-                    System.out.println("Added bid to history " + curUser + " " + curLotBuyPrice);
+                    System.out.println("Added bid to history - user: " + curUser + " price £" + curLotBuyPrice);
                 }catch (Exception e)
                 {
                     System.err.println("Failed to add bid to history");
