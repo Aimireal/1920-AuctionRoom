@@ -232,12 +232,17 @@ public class SellGUI extends JDialog
                         return false;
                     } else
                     {
-                        if(!buyNowPrice.matches("[0-9.]*"))
+                        if(buyNowPrice == null || buyNowPrice.isEmpty())
                         {
-                            System.err.println("Enter numbers");
+                            System.err.println("You need a buy now price");
                             return false;
                         } else
                         {
+                            if(!buyNowPrice.matches("[0-9.]*"))
+                            {
+                                System.err.println("Enter Numbers");
+                                return false;
+                            } else
                             {
                                 //Values verified
                                 lotTitle = title;
