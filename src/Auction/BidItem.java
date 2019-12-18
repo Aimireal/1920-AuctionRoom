@@ -1,7 +1,3 @@
-/*
-    Auction.BidItem - Class for creating the bid history information
- */
-
 package Auction;
 import net.jini.core.entry.Entry;
 

@@ -1,11 +1,7 @@
-/*
-    Auction.AuctionLotStartQueue - Start up a connection to the JavaSpace (MUST BE RUN)
-    ToDo: More connection options so it can hook up with Gary's JavaSpace server
- */
-
 package Auction;
 import net.jini.core.lease.Lease;
 import net.jini.space.JavaSpace;
+
 
 public class AuctionLotStartQueue
 {

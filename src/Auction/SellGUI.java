@@ -4,15 +4,13 @@ import net.jini.core.event.RemoteEventListener;
 import net.jini.core.lease.Lease;
 import net.jini.core.transaction.Transaction;
 import net.jini.core.transaction.TransactionFactory;
+
 import net.jini.core.transaction.server.TransactionManager;
 import net.jini.space.JavaSpace;
-
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowFocusListener;
-import java.util.ArrayList;
 
 
 public class SellGUI extends JDialog

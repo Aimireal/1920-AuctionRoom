@@ -9,9 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowFocusListener;
-import java.util.ArrayList;
+
 
 public class AccountLoginGUI extends JDialog
 {
@@ -24,7 +22,6 @@ public class AccountLoginGUI extends JDialog
 
     private JavaSpace js;
     private TransactionManager tranMan;
-    private RemoteEventListener stub;
 
     private AccountItem userAccount;
 

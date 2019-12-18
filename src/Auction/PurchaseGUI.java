@@ -2,30 +2,27 @@ package Auction;
 
 import net.jini.core.event.RemoteEvent;
 import net.jini.core.event.RemoteEventListener;
-import net.jini.core.event.UnknownEventException;
 import net.jini.core.lease.Lease;
 import net.jini.core.transaction.CannotAbortException;
+
 import net.jini.core.transaction.Transaction;
 import net.jini.core.transaction.TransactionFactory;
 import net.jini.core.transaction.UnknownTransactionException;
 import net.jini.core.transaction.server.TransactionManager;
+
 import net.jini.export.Exporter;
 import net.jini.jeri.BasicILFactory;
 import net.jini.jeri.BasicJeriExporter;
 import net.jini.jeri.tcp.TcpServerEndpoint;
-import net.jini.space.JavaSpace;
-import org.apache.river.api.security.DelegateSecurityManager;
 
+import net.jini.space.JavaSpace;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowFocusListener;
+
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
-import java.text.Format;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
 
@@ -503,13 +500,13 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
     public void notify(RemoteEvent remoteEvent)
     {
         AuctionItem template = new AuctionItem();
-        template.lotNum = curLotNum;
+        template.lotNum = currentLotIndex;
         template.lotHighestBidder = curUser;
         template.lotExpired = true;
 
         try
         {
-            AuctionItem notifyLot = (AuctionItem)js.readIfExists(template, null, Long.MAX_VALUE);
+            AuctionItem notifyLot = (AuctionItem)js.readIfExists(template, null, SpaceUtils.TWO_SECONDS);
             JOptionPane.showMessageDialog(null, "Well done " + notifyLot.lotHighestBidder + " you won the auction '" +
                     notifyLot.lotTitle + "' for £" +
                     notifyLot.lotPrice + ", please pay for the item as soon as possible");

@@ -1,9 +1,6 @@
-/*
-    Auction.AuctionItem - Class for creating the lots and setting the values
- */
-
 package Auction;
 import net.jini.core.entry.*;
+
 
 public class AuctionItem implements Entry
 {

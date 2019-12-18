@@ -1,9 +1,6 @@
-/*
-    Auction.AccountItem - Class for creating the accounts username and password
- */
-
 package Auction;
 import net.jini.core.entry.*;
+
 
 public class AccountItem implements Entry
 {

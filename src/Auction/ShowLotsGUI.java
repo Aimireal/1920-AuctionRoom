@@ -1,28 +1,24 @@
 package Auction;
 
-import net.jini.core.entry.Entry;
 import net.jini.core.event.RemoteEvent;
 import net.jini.core.event.RemoteEventListener;
 import net.jini.core.event.UnknownEventException;
 import net.jini.core.transaction.*;
+
 import net.jini.core.transaction.server.*;
 import net.jini.core.lease.Lease;
 import net.jini.export.Exporter;
 import net.jini.jeri.BasicILFactory;
+
 import net.jini.jeri.BasicJeriExporter;
 import net.jini.jeri.tcp.TcpServerEndpoint;
 import net.jini.space.JavaSpace;
-import net.jini.space.MatchSet;
-
 import javax.swing.*;
+
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
 import java.awt.event.*;
 import java.rmi.RemoteException;
-import java.text.Collator;
-import java.util.ArrayList;
-import java.util.Collections;
 
 
 public class ShowLotsGUI extends JFrame implements RemoteEventListener
@@ -309,7 +305,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
 
 
     @Override
-    public void notify(RemoteEvent remoteEvent) throws UnknownEventException, RemoteException
+    public void notify(RemoteEvent remoteEvent)
     {
         try
         {
