@@ -80,7 +80,7 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
             @Override
             public void windowLostFocus(WindowEvent windowEvent)
             {
-                viewLots();
+                //Do nothing
             }
         });
 

@@ -126,8 +126,11 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
             try
             {
                 stub = (RemoteEventListener) exporter.export(this);
-                AuctionItem lotsTemplate = new AuctionItem();
-                js.notify(lotsTemplate, null, this.stub, Lease.FOREVER, null);
+                AuctionItem template = new AuctionItem();
+                template.lotNum = curLotNum;
+                template.lotHighestBidder = curUser;
+                template.lotExpired = true;
+                js.notify(template, null, this.stub, Lease.FOREVER, null);
             } catch (Exception e)
             {
                 e.printStackTrace();
@@ -135,6 +138,18 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
         }catch (Exception e)
         {
             e.printStackTrace();
+        }
+
+        //Setup security manager
+        try
+        {
+            if(System.getSecurityManager() == null)
+            {
+                System.setSecurityManager(new SecurityManager());
+            }
+        }catch (Exception e)
+        {
+            System.err.println("Failed to setup SecurityManager " + e);
         }
 
         //Setup for button functions
@@ -284,7 +299,7 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
                     AuctionItem template = new AuctionItem();
                     template.lotNum = currentLotIndex;
 
-                    auctionLot = (AuctionItem)js.readIfExists(template, txn, SpaceUtils.HALF_SECOND);
+                    auctionLot = (AuctionItem)js.readIfExists(template, txn, SpaceUtils.TWO_SECONDS);
                     String cleaned = txtFldBuyNowPrice.getText().replaceAll("[^\\d.]", "");
                     BigDecimal buyNowPrice = BigDecimal.valueOf(Long.parseLong(cleaned));
                     BigDecimal lotPrice = BigDecimal.valueOf(Long.parseLong(auctionLot.lotPrice));
@@ -485,22 +500,22 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
 
 
     @Override
-    public void notify(RemoteEvent remoteEvent) throws UnknownEventException, RemoteException
+    public void notify(RemoteEvent remoteEvent)
     {
-        /*
         AuctionItem template = new AuctionItem();
+        template.lotNum = curLotNum;
         template.lotHighestBidder = curUser;
         template.lotExpired = true;
 
         try
         {
-            AuctionItem notifyLot = (AuctionItem)js.readIfExists(template, null, SpaceUtils.TWO_SECONDS);
-            JOptionPane.showMessageDialog(null, "Well done " + curUser + " you won the auction for £" +
-                    curLotBidPrice + ", please pay for the item as soon as possible");
+            AuctionItem notifyLot = (AuctionItem)js.readIfExists(template, null, Long.MAX_VALUE);
+            JOptionPane.showMessageDialog(null, "Well done " + notifyLot.lotHighestBidder + " you won the auction '" +
+                    notifyLot.lotTitle + "' for £" +
+                    notifyLot.lotPrice + ", please pay for the item as soon as possible");
         }catch (Exception e)
         {
             e.printStackTrace();
         }
-         */
     }
 }
