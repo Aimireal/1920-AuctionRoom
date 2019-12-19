@@ -9,7 +9,7 @@ import net.jini.core.transaction.server.TransactionManager;
 public class SpaceUtils
 {
     //This code is from Gary, unchanged other than the variables below
-    public static String host = "localhost";
+    public static String host = "waterloo";
     public static int HALF_SECOND = 500;
     public static int ONE_SECOND = 1000;
     public static int TWO_SECONDS = 2000;
