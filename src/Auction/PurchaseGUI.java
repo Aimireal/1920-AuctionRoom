@@ -229,7 +229,7 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
                     AuctionItem template = new AuctionItem();
                     template.lotNum = currentLotIndex;
 
-                    auctionLot = (AuctionItem)js.readIfExists(template, txn, SpaceUtils.HALF_SECOND);
+                    auctionLot = (AuctionItem)js.readIfExists(template, txn, SpaceUtils.ONE_SECOND);
                     BigDecimal userBid = BigDecimal.valueOf(Long.parseLong(txtFldBid.getText()));
                     BigDecimal lotPrice = BigDecimal.valueOf(Long.parseLong(auctionLot.lotPrice));
 
@@ -237,7 +237,7 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
                     {
                         try
                         {
-                            js.take(auctionLot, txn, SpaceUtils.HALF_SECOND);
+                            js.take(auctionLot, txn, SpaceUtils.ONE_SECOND);
                             auctionLot.lotHighestBidder = curUser;
                             auctionLot.lotPrice = String.valueOf(userBid);
 
@@ -367,9 +367,6 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
                     {
                         auctionLot = (AuctionItem)js.take(template, txn, SpaceUtils.HALF_SECOND);
                         auctionLot.lotExpired = true;
-                        auctionLot.lotPrice = "0";
-                        auctionLot.lotBuyNowPrice = "0";
-                        auctionLot.lotHighestBidder = "";
 
                         js.write(auctionLot, txn, Lease.FOREVER);
                         JOptionPane.showMessageDialog(null, "This lot has been removed from auction");
@@ -499,6 +496,7 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
     @Override
     public void notify(RemoteEvent remoteEvent)
     {
+        /*
         AuctionItem template = new AuctionItem();
         template.lotNum = currentLotIndex;
         template.lotHighestBidder = curUser;
@@ -514,5 +512,6 @@ public class PurchaseGUI extends JDialog implements RemoteEventListener
         {
             e.printStackTrace();
         }
+         */
     }
 }

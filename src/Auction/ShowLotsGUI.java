@@ -310,9 +310,31 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
         try
         {
             viewLots();
+
         } catch (Exception e)
         {
-            System.err.println("Notify Failed " + e);
+            System.err.println("ViewLots Failed " + e);
+        }
+
+        AuctionItem template = new AuctionItem();
+        template.lotHighestBidder = loggedUsrName;
+        template.lotExpired = true;
+
+        try
+        {
+            AuctionItem notifyLot = (AuctionItem)js.readIfExists(template, null, SpaceUtils.TWO_SECONDS);
+
+            String highestBidder = notifyLot.lotHighestBidder;
+            String lotTitle = notifyLot.lotHighestBidder;
+            String lotPrice = notifyLot.lotPrice;
+            System.out.println("Bidder: " + highestBidder + " Title: " + lotTitle + " Price: £" + lotPrice);
+
+            JOptionPane.showMessageDialog(null, "Well done " + notifyLot.lotHighestBidder + " you won the auction '" +
+                    notifyLot.lotTitle + "' for £" +
+                    notifyLot.lotPrice + ", please pay for the item as soon as possible");
+        }catch (Exception e)
+        {
+            System.err.println("Lots notify failed: " + e);
         }
     }
 
