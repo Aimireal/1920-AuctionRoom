@@ -1,5 +1,6 @@
 package Auction;
 
+import net.jini.core.entry.UnusableEntryException;
 import net.jini.core.event.RemoteEvent;
 import net.jini.core.event.RemoteEventListener;
 import net.jini.core.event.UnknownEventException;
@@ -30,7 +31,9 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
     private JButton btnSellLot;
     private JButton btnLogin;
     private JButton btnRefresh;
+    private JLabel lblAuctionRoom;
 
+    public AuctionItem auctionLot;
     public AuctionItem lotsTemplate = new AuctionItem();
     public AuctionLotQueue queueTemplate = new AuctionLotQueue();
 
@@ -194,12 +197,12 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
                                 " | Highest Bidder: " + item.lotHighestBidder +
                                 " | Buy Now Price: £" + item.lotBuyNowPrice;
                         listModel.addElement(lotInformation);
-                        listLots.setModel(listModel);
                     } else
                     {
                         searching = false;
                     }
                 }
+                listLots.setModel(listModel);
 
                 //Enable/Disable based on if we have any values returned
                 if(listModel.isEmpty())
@@ -272,6 +275,8 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
                     JOptionPane.showMessageDialog(null, "You are already logged in, would you like to log out?");
                     loggedUsrName = "";
                     loggedIn = false;
+
+                    lblAuctionRoom.setText("AuctionRoom");
                 } else
                 {
                     //Run the AccountLoginGUI class and return the loggedIn boolean from there using Modality
@@ -279,6 +284,8 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
                     dialog.setVisible(true);
                     loggedIn = dialog.loggedIn;
                     loggedUsrName = dialog.loggedAs;
+
+                    lblAuctionRoom.setText("AuctionRoom - Logged in as " + loggedUsrName);
                 }
             }
         });
@@ -307,34 +314,75 @@ public class ShowLotsGUI extends JFrame implements RemoteEventListener
     @Override
     public void notify(RemoteEvent remoteEvent)
     {
-        try
-        {
-            viewLots();
-
-        } catch (Exception e)
-        {
-            System.err.println("ViewLots Failed " + e);
-        }
-
+        //Find lots to notify based on the user
         AuctionItem template = new AuctionItem();
         template.lotHighestBidder = loggedUsrName;
         template.lotExpired = true;
+        template.lotNotified = false;
 
         try
         {
-            AuctionItem notifyLot = (AuctionItem)js.readIfExists(template, null, SpaceUtils.TWO_SECONDS);
-
-            String highestBidder = notifyLot.lotHighestBidder;
-            String lotTitle = notifyLot.lotHighestBidder;
-            String lotPrice = notifyLot.lotPrice;
-            System.out.println("Bidder: " + highestBidder + " Title: " + lotTitle + " Price: £" + lotPrice);
-
-            JOptionPane.showMessageDialog(null, "Well done " + notifyLot.lotHighestBidder + " you won the auction '" +
-                    notifyLot.lotTitle + "' for £" +
-                    notifyLot.lotPrice + ", please pay for the item as soon as possible");
+            AuctionItem notifyLot = (AuctionItem)js.readIfExists(template, null, SpaceUtils.FIVE_SECONDS);
+            if(notifyLot != null)
+            {
+                try
+                {
+                    if(loggedUsrName.equals(notifyLot.lotHighestBidder))
+                    {
+                        JOptionPane.showMessageDialog(null, "Well done " + notifyLot.lotHighestBidder + " you won the auction '" +
+                                notifyLot.lotTitle + "' for £" +
+                                notifyLot.lotPrice + ", please pay for the item as soon as possible");
+                        setNotified(notifyLot.lotNum);
+                    } else
+                    {
+                        System.err.println("I'd let you know, but you didn't buy this one");
+                    }
+                }catch (Exception e)
+                {
+                    System.err.println("Failed to show message: " + e);
+                }
+            } else
+            {
+                System.err.println("NotifyLot returned null");
+            }
         }catch (Exception e)
         {
             System.err.println("Lots notify failed: " + e);
+        }
+        //Refresh the list
+        viewLots();
+    }
+
+    public void setNotified(int lotNum) throws TransactionException, UnusableEntryException, RemoteException, InterruptedException
+    {
+        //Set the notified on the auction
+        Transaction.Created trc = null;
+        try
+        {
+            trc = TransactionFactory.create(tranMan, SpaceUtils.TWO_SECONDS);
+        } catch (Exception e)
+        {
+            System.err.println("Failed to create Transaction");
+        }
+
+        Transaction txn = trc.transaction;
+
+        AuctionItem template = new AuctionItem();
+        template.lotNum = lotNum;
+
+        auctionLot = (AuctionItem) js.readIfExists(template, txn, SpaceUtils.ONE_SECOND);
+        if (auctionLot != null)
+        {
+            js.take(auctionLot, txn, SpaceUtils.ONE_SECOND);
+            auctionLot.lotNotified = true;
+            js.write(auctionLot, txn, Lease.FOREVER);
+
+            System.out.println("Successfully set auction to notified");
+            txn.commit();
+        } else
+        {
+            System.err.println("Failed to set lot " + lotNum + " to notified");
+            txn.abort();
         }
     }
 

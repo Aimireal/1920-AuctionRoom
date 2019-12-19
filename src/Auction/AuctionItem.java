@@ -16,6 +16,7 @@ public class AuctionItem implements Entry
 
     public Long lotCreationTime;
     public Boolean lotExpired; //Boolean for active auction
+    public Boolean lotNotified;
 
 
     public AuctionItem()
@@ -37,6 +38,7 @@ public class AuctionItem implements Entry
 
         lotCreationTime = System.currentTimeMillis();
         lotExpired = false;
+        lotNotified = false;
     }
 
 }
