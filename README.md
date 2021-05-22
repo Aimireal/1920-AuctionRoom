@@ -1,5 +1,5 @@
 # University of Huddersfield - Distributed Systems CHS2546
-University assignment in order to use a JavaSpace to run an online auction room. Created by Dylan Hudson.
+University assignment in order to use a JavaSpace to run an online auction room. Created by Dylan
 
 The requirements of the application are as follows:
 1) The ability for anyone with access to the system to add a new lot for auction. This could simply be a text description of an item for sale.
